@@ -1,0 +1,95 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Design Tokens — Dirección A: Boutique cálido ── */
+:root {
+  /* Colores */
+  --bg: #FBF6F1;
+  --bg-2: #F3E7DD;
+  --surface: #FFFFFF;
+  --hero-bg: #F3E7DD;
+  --ink: #3B302A;
+  --ink-soft: #6E5F54;
+  --muted: #9C8C7E;
+  --line: #EBDFD4;
+  --line-strong: #D8C8BA;
+  --accent: #CE8C66;
+  --accent-ink: #FFFFFF;
+  --blush: #E7D4C9;
+
+  /* Sombras */
+  --shadow: 0 10px 30px -16px rgba(80, 55, 40, 0.28);
+  --shadow-hover: 0 18px 40px -16px rgba(80, 55, 40, 0.4);
+
+  /* Tipografía — variables inyectadas por next/font/google */
+  --ui-font: var(--font-nunito), 'Nunito Sans', sans-serif;
+  --head-fam: var(--font-cormorant), 'Cormorant Garamond', Georgia, serif;
+
+  /* Fonts compuestos */
+  --h1-font: 500 clamp(34px, 4vw, 46px) / 1.16 var(--head-fam);
+  --h2-font: 500 clamp(26px, 3vw, 36px) / 1.2 var(--head-fam);
+  --h3-font: 500 22px / 1.2 var(--head-fam);
+  --card-title-font: 500 18px / 1.25 var(--head-fam);
+  --stat-font: 500 25px / 1 var(--head-fam);
+
+  /* Heading transforms — Dirección A */
+  --head-transform: none;
+  --head-tracking: 0;
+  --em-style: italic;
+  --btn-transform: none;
+  --btn-weight: 700;
+
+  /* Radios */
+  --radius: 18px;
+  --radius-sm: 12px;
+  --btn-radius: 999px;
+
+  /* Layout */
+  --pad: clamp(20px, 5vw, 64px);
+}
+
+/* ── Base ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--ui-font);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* IBM Plex Mono disponible como var(--font-mono) donde se necesite */
+
+/* ── Utilidades compartidas ── */
+.wrap {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding-left: var(--pad);
+  padding-right: var(--pad);
+}
+
+em {
+  font-style: var(--em-style);
+  color: var(--accent);
+}
+
+/* Scrollbar sutil */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-2);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border-radius: 3px;
+}
