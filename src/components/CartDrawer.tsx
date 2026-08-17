@@ -2,8 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
-import { COLORS } from "@/lib/data";
-import { fmt } from "@/lib/data";
+import { COLORS, fmt, getCrossSellProducts, toneFor } from "@/lib/data";
 import Photo from "./Photo";
 import Btn from "./Btn";
 import Icon from "./Icon";
@@ -15,6 +14,10 @@ export default function CartDrawer() {
   const router = useRouter();
 
   const goToCatalog = () => { closeCart(); router.push("/catalogo"); };
+  const goToCheckout = () => { closeCart(); router.push("/checkout"); };
+  const goToProduct = (id: string) => { closeCart(); router.push(`/producto/${id}`); };
+
+  const crossSell = getCrossSellProducts(items, 3);
 
   return (
     <>
@@ -43,7 +46,7 @@ export default function CartDrawer() {
           display: "flex", alignItems: "center", justifyContent: "space-between",
           padding: "20px 22px", borderBottom: "1px solid var(--line)",
         }}>
-          <h2 style={{ margin: 0, font: "600 21px/1 var(--head-fam,'Cormorant Garamond',serif)", color: "var(--ink)" }}>
+          <h2 style={{ margin: 0, font: "600 21px/1 var(--head-fam,'Caveat',cursive)", color: "var(--ink)" }}>
             Tu carrito
           </h2>
           <button onClick={closeCart} style={ICON_BTN}><Icon name="close" /></button>
@@ -92,6 +95,32 @@ export default function CartDrawer() {
                   </div>
                 </div>
               ))}
+
+              {/* Cross-sell */}
+              {crossSell.length > 0 && (
+                <div style={{ padding: "18px 0 6px" }}>
+                  <p style={{ margin: "0 0 12px", font: "700 12px/1 var(--ui-font)", color: "var(--ink)" }}>
+                    También te puede interesar
+                  </p>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
+                    {crossSell.map((p) => (
+                      <button
+                        key={p.id}
+                        onClick={() => goToProduct(p.id)}
+                        style={{
+                          display: "flex", flexDirection: "column", gap: 6,
+                          border: "none", background: "none", padding: 0,
+                          cursor: "pointer", textAlign: "left",
+                        }}
+                      >
+                        <Photo src={p.image} alt={p.name} tone={toneFor(p)} ratio="1 / 1" round="var(--radius-sm)" />
+                        <span style={{ font: "600 11px/1.25 var(--ui-font)", color: "var(--ink)" }}>{p.name}</span>
+                        <span style={{ font: "700 11px/1 var(--ui-font)", color: "var(--accent)" }}>{fmt(p.price)}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Footer */}
@@ -105,7 +134,7 @@ export default function CartDrawer() {
                   ? "✓ Tu pedido tiene envío gratis"
                   : `Te faltan ${fmt(FREE_SHIPPING - subtotal)} para el envío gratis`}
               </p>
-              <Btn full size="lg">Finalizar compra</Btn>
+              <Btn full size="lg" onClick={goToCheckout}>Finalizar compra</Btn>
             </div>
           </>
         )}

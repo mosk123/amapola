@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { CATEGORIES, PRODUCTS } from "@/lib/data";
+import { CATEGORIES, CATALOG_PRODUCTS } from "@/lib/data";
 import Eyebrow from "@/components/Eyebrow";
 import Photo from "@/components/Photo";
 import ProductCard from "@/components/ProductCard";
@@ -14,6 +14,13 @@ const STATS = [
 
 const CAT_TONES = ["caramel", "sage", "rosa"] as const;
 
+// Fotos a modo de ejemplo — reemplazar por las definitivas de cada categoría.
+const CAT_IMAGES = [
+  "https://res.cloudinary.com/ddtqy6ltq/image/upload/v1786832245/Amapola-18_hwzfix.jpg",
+  "https://res.cloudinary.com/ddtqy6ltq/image/upload/v1786832244/Amapola-38_sc6azn.jpg",
+  "https://res.cloudinary.com/ddtqy6ltq/image/upload/v1786832243/Amapola-01_hhy4yc.jpg",
+];
+
 const HANDMADE = [
   { icon: "hand" as const, title: "Hecho a mano", text: "Cada pieza lleva horas de trabajo paciente con dos agujas o en telar." },
   { icon: "leaf" as const, title: "Fibras nobles", text: "Lana merino, alpaca, algodón pima y lana de oveja sin teñir." },
@@ -21,7 +28,8 @@ const HANDMADE = [
 ];
 
 export default function Home() {
-  const featured = PRODUCTS.filter((p) => p.badge).slice(0, 4);
+  const badged = CATALOG_PRODUCTS.filter((p) => p.badge);
+  const featured = (badged.length > 0 ? badged : CATALOG_PRODUCTS).slice(0, 4);
 
   return (
     <div>
@@ -67,14 +75,20 @@ export default function Home() {
 
           {/* Foto hero + insignia */}
           <div style={{ position: "relative" }}>
-            <Photo label="foto principal · modelo con sweater tejido" tone="blush" ratio="4 / 5" />
+            <Photo
+              src="https://res.cloudinary.com/ddtqy6ltq/image/upload/v1786832245/Amapola-69_gzv6di.jpg"
+              alt="Modelo con sweater tejido a mano"
+              label="foto principal · modelo con sweater tejido"
+              tone="blush"
+              ratio="4 / 5"
+            />
             <div style={{
               position: "absolute", bottom: -22, left: -22,
               width: 132, height: 132, borderRadius: "50%",
               background: "var(--surface)", boxShadow: "var(--shadow)",
               display: "grid", placeItems: "center", padding: 12,
             }}>
-              <Image src="/amapola-logo.png" alt="Amapola" width={108} height={108} style={{ borderRadius: "50%" }} />
+              <Image src="/logo/isotipo-color.png" alt="Amapola" width={106} height={90} style={{ objectFit: "contain" }} />
             </div>
           </div>
         </div>
@@ -100,7 +114,13 @@ export default function Home() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
           {CATEGORIES.map((c, i) => (
             <Link key={c.id} href={`/catalogo/${c.id}`} style={{ textDecoration: "none", display: "flex", flexDirection: "column", gap: 14 }}>
-              <Photo label={`foto · ${c.label.toLowerCase()}`} tone={CAT_TONES[i]} ratio="3 / 4" />
+              <Photo
+                src={CAT_IMAGES[i]}
+                alt={c.label}
+                label={`foto · ${c.label.toLowerCase()}`}
+                tone={CAT_TONES[i]}
+                ratio="3 / 4"
+              />
               <div>
                 <h3 style={{ margin: "0 0 4px", font: "var(--h3-font)", color: "var(--ink)" }}>{c.label}</h3>
                 <p style={{ margin: 0, font: "400 13px/1.45 var(--ui-font)", color: "var(--ink-soft)" }}>{c.blurb}</p>
@@ -123,7 +143,7 @@ export default function Home() {
               Prendas destacadas
             </h2>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 24 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 280px))", gap: 24, justifyContent: "center" }}>
             {featured.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}

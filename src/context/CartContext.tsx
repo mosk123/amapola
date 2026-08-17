@@ -11,6 +11,7 @@ interface CartContextValue {
   addToCart: (product: Product, color: ColorKey, size: string) => void;
   removeFromCart: (index: number) => void;
   updateQty: (index: number, delta: number) => void;
+  clearCart: () => void;
   openCart: () => void;
   closeCart: () => void;
 }
@@ -47,10 +48,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     );
   }, []);
 
+  const clearCart = useCallback(() => {
+    setItems([]);
+  }, []);
+
   return (
     <CartContext.Provider value={{
       items, cartOpen, cartCount, subtotal,
-      addToCart, removeFromCart, updateQty,
+      addToCart, removeFromCart, updateQty, clearCart,
       openCart: () => setCartOpen(true),
       closeCart: () => setCartOpen(false),
     }}>

@@ -50,7 +50,7 @@ export default function ProductClient({ product: p }: Props) {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(28px,4vw,60px)", alignItems: "start" }}>
           {/* Fotos */}
           <div style={{ position: "sticky", top: 92 }}>
-            <Photo label={`foto · ${p.name}`} tone={toneFor(p)} ratio="4 / 5" />
+            <Photo src={p.image} alt={p.name} label={`foto · ${p.name}`} tone={toneFor(p)} ratio="4 / 5" />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginTop: 12 }}>
               {[0, 1, 2, 3].map((i) => (
                 <div key={i} style={{

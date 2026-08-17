@@ -76,9 +76,10 @@ export default function Btn({
       style={{
         ...BASE,
         ...VARIANTS[variant],
-        ...(hover ? HOVER[variant] : {}),
+        ...(hover && !disabled ? HOVER[variant] : {}),
         padding: SIZES[size],
         width: full ? "100%" : "auto",
+        ...(disabled ? { opacity: 0.5, cursor: "not-allowed" } : {}),
         ...style,
       }}
     >

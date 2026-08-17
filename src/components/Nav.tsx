@@ -26,35 +26,21 @@ export default function Nav() {
   return (
     <header style={{
       position: "sticky", top: 0, zIndex: 40,
-      background: "color-mix(in srgb, var(--bg) 88%, transparent)",
+      background: "color-mix(in srgb, var(--ink) 92%, transparent)",
       backdropFilter: "blur(10px)",
-      borderBottom: "1px solid var(--line)",
+      borderBottom: "1px solid rgba(255,255,255,.12)",
     }}>
       <div className="wrap" style={{ display: "flex", alignItems: "center", gap: 20, padding: "12px var(--pad)" }}>
         {/* Logo */}
-        <Link href="/" style={{ display: "flex", alignItems: "center", gap: 11, textDecoration: "none" }}>
+        <Link href="/" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
           <Image
-            src="/amapola-logo.png"
-            alt="Amapola"
-            width={46}
-            height={46}
-            style={{ borderRadius: "50%" }}
+            src="/logo/wordmark-light.png"
+            alt="Amapola Knitwear"
+            width={150}
+            height={48}
+            style={{ objectFit: "contain" }}
             priority
           />
-          <span style={{ display: "flex", flexDirection: "column", lineHeight: 1 }}>
-            <span style={{
-              font: "600 22px/1 var(--head-fam, 'Cormorant Garamond', serif)",
-              letterSpacing: ".06em", color: "var(--ink)",
-            }}>
-              AMAPOLA
-            </span>
-            <span style={{
-              font: "500 9px/1.2 'IBM Plex Mono', monospace",
-              letterSpacing: ".18em", color: "var(--muted)", marginTop: 3,
-            }}>
-              TEJIDOS ARTESANALES
-            </span>
-          </span>
         </Link>
 
         {/* Links */}
@@ -69,7 +55,7 @@ export default function Nav() {
                   font: "600 14px/1 var(--ui-font)",
                   padding: "8px 14px",
                   borderRadius: "var(--btn-radius)",
-                  color: active ? "var(--ink)" : "var(--ink-soft)",
+                  color: active ? "var(--bg)" : "rgba(255,255,255,.7)",
                   textDecorationLine: active ? "underline" : "none",
                   textUnderlineOffset: 6,
                   textDecorationColor: "var(--accent)",
@@ -110,5 +96,5 @@ export default function Nav() {
 
 const ICON_BTN: React.CSSProperties = {
   width: 40, height: 40, borderRadius: "50%", display: "grid", placeItems: "center",
-  border: "none", background: "none", cursor: "pointer", color: "var(--ink)",
+  border: "none", background: "none", cursor: "pointer", color: "var(--bg)",
 };

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import type { ImageTone } from "@/types";
 
 const TONES: Record<ImageTone, [string, string]> = {
@@ -10,6 +11,8 @@ const TONES: Record<ImageTone, [string, string]> = {
 };
 
 interface PhotoProps {
+  src?: string;
+  alt?: string;
   label?: string;
   tone?: ImageTone;
   ratio?: string;
@@ -19,6 +22,8 @@ interface PhotoProps {
 }
 
 export default function Photo({
+  src,
+  alt,
   label = "",
   tone = "blush",
   ratio = "1 / 1",
@@ -38,25 +43,35 @@ export default function Photo({
         width: "100%",
         overflow: "hidden",
         borderRadius,
-        background: `repeating-linear-gradient(135deg, ${a} 0 9px, ${b} 9px 18px)`,
+        background: src ? undefined : `repeating-linear-gradient(135deg, ${a} 0 9px, ${b} 9px 18px)`,
       }}
     >
-      <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center" }}>
-        {label && (
-          <span style={{
-            font: "500 11px/1.4 'IBM Plex Mono', ui-monospace, monospace",
-            letterSpacing: ".04em",
-            color: "var(--ink-soft)",
-            background: "color-mix(in srgb, var(--surface) 78%, transparent)",
-            padding: "5px 10px",
-            borderRadius: 999,
-            textAlign: "center",
-            maxWidth: "80%",
-          }}>
-            {label}
-          </span>
-        )}
-      </div>
+      {src ? (
+        <Image
+          src={src}
+          alt={alt || label || ""}
+          fill
+          sizes="(max-width: 768px) 100vw, 50vw"
+          style={{ objectFit: "cover" }}
+        />
+      ) : (
+        <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center" }}>
+          {label && (
+            <span style={{
+              font: "500 11px/1.4 'IBM Plex Mono', ui-monospace, monospace",
+              letterSpacing: ".04em",
+              color: "var(--ink-soft)",
+              background: "color-mix(in srgb, var(--surface) 78%, transparent)",
+              padding: "5px 10px",
+              borderRadius: 999,
+              textAlign: "center",
+              maxWidth: "80%",
+            }}>
+              {label}
+            </span>
+          )}
+        </div>
+      )}
       {children}
     </div>
   );

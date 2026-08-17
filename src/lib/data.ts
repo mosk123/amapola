@@ -23,6 +23,8 @@ export const PRODUCTS: Product[] = [
     badge: "Más vendido", fiber: "Lana merino",
     short: "Punto trenza grueso, cuello redondo y caída holgada.",
     desc: "Tejido en punto trenza con lana merino hilada en la sierra. Abriga sin pesar y se ablanda con cada lavado. Cada pieza lleva entre dos y tres semanas de trabajo en dos agujas.",
+    image: "https://res.cloudinary.com/ddtqy6ltq/image/upload/v1786832245/Amapola-69_gzv6di.jpg",
+    hidden: true,
   },
   {
     id: "cardigan-amapola", name: "Cardigan Amapola", cat: "sweaters", audience: "Mujer",
@@ -30,6 +32,8 @@ export const PRODUCTS: Product[] = [
     badge: "Nuevo", fiber: "Lana + alpaca",
     short: "Saco abierto con botones de coco y bolsillos.",
     desc: "Nuestro clásico: saco abierto de lana y alpaca, con botones de coco cosidos a mano y dos bolsillos al frente. El que te ponés apenas refresca y no te querés sacar.",
+    image: "https://res.cloudinary.com/ddtqy6ltq/image/upload/v1786832245/Amapola-59_yfuuy3.jpg",
+    hidden: true,
   },
   {
     id: "pullover-trigo", name: "Pullover Trigo", cat: "sweaters", audience: "Mujer",
@@ -37,13 +41,16 @@ export const PRODUCTS: Product[] = [
     fiber: "Algodón orgánico",
     short: "Punto liviano de media estación, cuello alto suave.",
     desc: "Pensado para el entretiempo: algodón orgánico en punto liviano, cuello alto que no aprieta. Va igual de bien con jean que con un vestido largo.",
+    image: "https://res.cloudinary.com/ddtqy6ltq/image/upload/v1786832245/Amapola-23_zgctvv.jpg",
+    hidden: true,
   },
   {
-    id: "sweater-nube", name: "Sweater Nube", cat: "sweaters", audience: "Niños",
+    id: "sweater-nube", name: "Sweater Nube", cat: "sweaters", audience: "Clásico",
     price: 26000, colors: ["crudo", "salvia", "rosa"], sizes: ["2", "4", "6", "8"],
     fiber: "Algodón pima",
     short: "Para peques: suave, sin etiquetas que molesten.",
     desc: "Algodón pima bien suave, sin costuras ásperas ni etiquetas que pican. Tejido pensado para que el abrigo de los más chicos sea un mimo, no una pelea.",
+    image: "https://res.cloudinary.com/ddtqy6ltq/image/upload/v1786832245/Amapola-18_hwzfix.jpg"
   },
   {
     id: "medias-lana", name: "Medias Lana Cruda", cat: "accesorios", audience: "Unisex",
@@ -51,6 +58,8 @@ export const PRODUCTS: Product[] = [
     badge: "Más vendido", fiber: "Lana cruda",
     short: "Medias gruesas de invierno, puño acanalado.",
     desc: "Las medias de invierno que faltaban: lana cruda gruesa, puño acanalado que no se cae y talón reforzado. Para andar por casa o meter en la bota.",
+    image: "https://res.cloudinary.com/ddtqy6ltq/image/upload/v1786832245/Amapola-58_vc3j21.jpg",
+    hidden: true,
   },
   {
     id: "guantes-hoja", name: "Guantes Hoja", cat: "accesorios", audience: "Mujer",
@@ -58,13 +67,16 @@ export const PRODUCTS: Product[] = [
     fiber: "Lana merino",
     short: "Mitones con detalle de hoja tejido al dorso.",
     desc: "Mitones que dejan los dedos libres, con un dibujo de hoja tejido al dorso. Lana merino que no raspa, para el celular, el mate y las manos frías.",
+    image: "https://res.cloudinary.com/ddtqy6ltq/image/upload/v1786832244/Amapola-08_yjs3kf.jpg",
+    hidden: true,
   },
   {
-    id: "gorro-pompon", name: "Gorro Pompón", cat: "accesorios", audience: "Niños",
+    id: "gorro-pompon", name: "Gorro Pompón", cat: "accesorios", audience: "Clásico",
     price: 11000, colors: ["rosa", "salvia", "trigo"], sizes: ["1-3", "4-7"],
     fiber: "Lana + algodón",
     short: "Gorro con pompón desmontable y orejeras.",
     desc: "Gorro con orejeras y un pompón bien grande que se puede sacar para lavar. Tejido en lana con algodón para que abrigue sin picar la frente.",
+    image: "https://res.cloudinary.com/ddtqy6ltq/image/upload/v1786832244/Amapola-38_sc6azn.jpg"
   },
   {
     id: "cuello-salvia", name: "Cuello Salvia", cat: "accesorios", audience: "Mujer",
@@ -72,6 +84,8 @@ export const PRODUCTS: Product[] = [
     fiber: "Lana merino",
     short: "Cuello infinito de punto inglés, doble vuelta.",
     desc: "Cuello infinito en punto inglés, lo bastante largo para dar dos vueltas. Reemplaza a la bufanda y no se desarma cuando te sacás el abrigo.",
+    image: "https://res.cloudinary.com/ddtqy6ltq/image/upload/v1786832243/Amapola-32_slroia.jpg",
+    hidden: true,
   },
   {
     id: "manta-telar", name: "Manta Telar", cat: "mantas", audience: "Hogar",
@@ -79,13 +93,16 @@ export const PRODUCTS: Product[] = [
     badge: "Edición limitada", fiber: "Lana de oveja",
     short: "Manta grande de telar, flecos anudados a mano.",
     desc: "Tejida en telar con lana de oveja sin teñir y teñidos naturales. Flecos anudados uno por uno. Es la manta que queda sobre el respaldo del sillón todo el invierno.",
+    image: "https://res.cloudinary.com/ddtqy6ltq/image/upload/v1786832243/Amapola-25_mvblh4.jpg",
+    hidden: true,
   },
   {
-    id: "manta-bebe", name: "Manta Bebé Nube", cat: "mantas", audience: "Niños",
+    id: "manta-bebe", name: "Manta Bebé Nube", cat: "mantas", audience: "Clásico",
     price: 34000, colors: ["crudo", "rosa", "salvia"], sizes: ["80 × 90 cm"],
     fiber: "Algodón pima",
     short: "Mantita de cuna en punto nube, súper liviana.",
     desc: "Punto nube en algodón pima, liviana y transpirable para la cuna o el cochecito. Tamaño justo para envolver sin que sobre. Un regalo de nacimiento que dura.",
+    image: "https://res.cloudinary.com/ddtqy6ltq/image/upload/v1786832243/Amapola-01_hhy4yc.jpg"
   },
   {
     id: "throw-cosecha", name: "Throw Cosecha", cat: "mantas", audience: "Hogar",
@@ -93,20 +110,111 @@ export const PRODUCTS: Product[] = [
     fiber: "Lana + algodón",
     short: "Manta de sillón en bloques de color cosecha.",
     desc: "Bloques de color en tonos de cosecha —trigo, terracota, arena— tejidos en lana y algodón. Da calidez a un sillón neutro sin tapar el resto de la casa.",
+    image: "https://res.cloudinary.com/ddtqy6ltq/image/upload/v1786832244/Amapola-13_wyyceo.jpg",
+    hidden: true,
+  },
+
+  // -- Repetidos a modo de preview de "Colores" y "Animales" — placeholders hasta tener productos reales de cada línea --
+  {
+    id: "sweater-nube-colores", name: "Sweater Nube", cat: "sweaters", audience: "Colores",
+    price: 26000, colors: ["crudo", "salvia", "rosa"], sizes: ["2", "4", "6", "8"],
+    fiber: "Algodón pima",
+    short: "Para peques: suave, sin etiquetas que molesten.",
+    desc: "Algodón pima bien suave, sin costuras ásperas ni etiquetas que pican. Tejido pensado para que el abrigo de los más chicos sea un mimo, no una pelea.",
+    image: "https://res.cloudinary.com/ddtqy6ltq/image/upload/v1786832245/Amapola-18_hwzfix.jpg",
+  },
+  {
+    id: "gorro-pompon-colores", name: "Gorro Pompón", cat: "accesorios", audience: "Colores",
+    price: 11000, colors: ["rosa", "salvia", "trigo"], sizes: ["1-3", "4-7"],
+    fiber: "Lana + algodón",
+    short: "Gorro con pompón desmontable y orejeras.",
+    desc: "Gorro con orejeras y un pompón bien grande que se puede sacar para lavar. Tejido en lana con algodón para que abrigue sin picar la frente.",
+    image: "https://res.cloudinary.com/ddtqy6ltq/image/upload/v1786832244/Amapola-38_sc6azn.jpg",
+  },
+  {
+    id: "manta-bebe-colores", name: "Manta Bebé Nube", cat: "mantas", audience: "Colores",
+    price: 34000, colors: ["crudo", "rosa", "salvia"], sizes: ["80 × 90 cm"],
+    fiber: "Algodón pima",
+    short: "Mantita de cuna en punto nube, súper liviana.",
+    desc: "Punto nube en algodón pima, liviana y transpirable para la cuna o el cochecito. Tamaño justo para envolver sin que sobre. Un regalo de nacimiento que dura.",
+    image: "https://res.cloudinary.com/ddtqy6ltq/image/upload/v1786832243/Amapola-01_hhy4yc.jpg",
+  },
+  {
+    id: "sweater-nube-colores-2", name: "Sweater Nube", cat: "sweaters", audience: "Colores",
+    price: 26000, colors: ["crudo", "salvia", "rosa"], sizes: ["2", "4", "6", "8"],
+    fiber: "Algodón pima",
+    short: "Para peques: suave, sin etiquetas que molesten.",
+    desc: "Algodón pima bien suave, sin costuras ásperas ni etiquetas que pican. Tejido pensado para que el abrigo de los más chicos sea un mimo, no una pelea.",
+    image: "https://res.cloudinary.com/ddtqy6ltq/image/upload/v1786832245/Amapola-18_hwzfix.jpg",
+  },
+  {
+    id: "sweater-nube-animales", name: "Sweater Nube", cat: "sweaters", audience: "Animales",
+    price: 26000, colors: ["crudo", "salvia", "rosa"], sizes: ["2", "4", "6", "8"],
+    fiber: "Algodón pima",
+    short: "Para peques: suave, sin etiquetas que molesten.",
+    desc: "Algodón pima bien suave, sin costuras ásperas ni etiquetas que pican. Tejido pensado para que el abrigo de los más chicos sea un mimo, no una pelea.",
+    image: "https://res.cloudinary.com/ddtqy6ltq/image/upload/v1786832245/Amapola-18_hwzfix.jpg",
+  },
+  {
+    id: "gorro-pompon-animales", name: "Gorro Pompón", cat: "accesorios", audience: "Animales",
+    price: 11000, colors: ["rosa", "salvia", "trigo"], sizes: ["1-3", "4-7"],
+    fiber: "Lana + algodón",
+    short: "Gorro con pompón desmontable y orejeras.",
+    desc: "Gorro con orejeras y un pompón bien grande que se puede sacar para lavar. Tejido en lana con algodón para que abrigue sin picar la frente.",
+    image: "https://res.cloudinary.com/ddtqy6ltq/image/upload/v1786832244/Amapola-38_sc6azn.jpg",
+  },
+  {
+    id: "manta-bebe-animales", name: "Manta Bebé Nube", cat: "mantas", audience: "Animales",
+    price: 34000, colors: ["crudo", "rosa", "salvia"], sizes: ["80 × 90 cm"],
+    fiber: "Algodón pima",
+    short: "Mantita de cuna en punto nube, súper liviana.",
+    desc: "Punto nube en algodón pima, liviana y transpirable para la cuna o el cochecito. Tamaño justo para envolver sin que sobre. Un regalo de nacimiento que dura.",
+    image: "https://res.cloudinary.com/ddtqy6ltq/image/upload/v1786832243/Amapola-01_hhy4yc.jpg",
+  },
+  {
+    id: "gorro-pompon-animales-2", name: "Gorro Pompón", cat: "accesorios", audience: "Animales",
+    price: 11000, colors: ["rosa", "salvia", "trigo"], sizes: ["1-3", "4-7"],
+    fiber: "Lana + algodón",
+    short: "Gorro con pompón desmontable y orejeras.",
+    desc: "Gorro con orejeras y un pompón bien grande que se puede sacar para lavar. Tejido en lana con algodón para que abrigue sin picar la frente.",
+    image: "https://res.cloudinary.com/ddtqy6ltq/image/upload/v1786832244/Amapola-38_sc6azn.jpg",
   },
 ];
+
+/** Productos activos en catálogo público (excluye los ocultos por el rebrand a solo-niños). */
+export const CATALOG_PRODUCTS: Product[] = PRODUCTS.filter((p) => !p.hidden);
 
 export function getProductById(id: string): Product | undefined {
   return PRODUCTS.find((p) => p.id === id);
 }
 
 export function getProductsByCategory(cat: string): Product[] {
-  if (!cat || cat === "todo") return PRODUCTS;
-  return PRODUCTS.filter((p) => p.cat === cat);
+  if (!cat || cat === "todo") return CATALOG_PRODUCTS;
+  return CATALOG_PRODUCTS.filter((p) => p.cat === cat);
 }
 
 export function getRelatedProducts(product: Product, limit = 3): Product[] {
-  return PRODUCTS.filter((p) => p.cat === product.cat && p.id !== product.id).slice(0, limit);
+  return CATALOG_PRODUCTS.filter((p) => p.cat === product.cat && p.id !== product.id).slice(0, limit);
+}
+
+/** Sugerencias para el carrito — prioriza la misma categoría que lo que ya está en el carrito, sin repetir productos ya agregados ni duplicar por nombre (varios ids comparten foto/nombre como preview de Colores/Animales). */
+export function getCrossSellProducts(cartItems: { id: string; name: string; cat: string }[], limit = 3): Product[] {
+  const cartIds = new Set(cartItems.map((it) => it.id));
+  const cartNames = new Set(cartItems.map((it) => it.name));
+  const cartCats = new Set(cartItems.map((it) => it.cat));
+  const seenNames = new Set<string>();
+
+  const pick = (pool: Product[]) =>
+    pool.filter((p) => {
+      if (cartIds.has(p.id) || cartNames.has(p.name) || seenNames.has(p.name)) return false;
+      seenNames.add(p.name);
+      return true;
+    });
+
+  const sameCategory = pick(CATALOG_PRODUCTS.filter((p) => cartCats.has(p.cat)));
+  const rest = pick(CATALOG_PRODUCTS);
+
+  return [...sameCategory, ...rest].slice(0, limit);
 }
 
 export function fmt(n: number): string {

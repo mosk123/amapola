@@ -30,6 +30,9 @@ export type Product = {
   fiber: string;
   short: string;
   desc: string;
+  image?: string;
+  /** Producto fuera de venta por ahora (rebrand a solo niños) — se mantiene en los datos pero no aparece en catálogo/inicio. */
+  hidden?: boolean;
 };
 
 export type CartItem = Product & {

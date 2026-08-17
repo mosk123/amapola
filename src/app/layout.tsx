@@ -1,18 +1,11 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Nunito_Sans, IBM_Plex_Mono } from "next/font/google";
+import { Nunito_Sans, IBM_Plex_Mono, Caveat } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
-
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["500", "600"],
-  style: ["normal", "italic"],
-  variable: "--font-cormorant",
-  display: "swap",
-});
 
 const nunito = Nunito_Sans({
   subsets: ["latin"],
@@ -29,6 +22,21 @@ const ibmMono = IBM_Plex_Mono({
   display: "swap",
 });
 
+// Fallback manuscrito si "Dreaming Outloud Sans" no carga.
+const caveat = Caveat({
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  variable: "--font-caveat",
+  display: "swap",
+});
+
+// Fuente oficial de la identidad — usada en títulos (h1/h2/h3).
+const dreamingOutloud = localFont({
+  src: "../fonts/dreaming-outloud-regular.otf",
+  variable: "--font-dreaming",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Amapola — Tejidos Artesanales",
   description: "Sweaters, accesorios y mantas tejidos a mano con lanas y algodones naturales. Para mujeres, niños y el hogar.",
@@ -36,7 +44,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className={`${cormorant.variable} ${nunito.variable} ${ibmMono.variable}`}>
+    <html lang="es" className={`${nunito.variable} ${ibmMono.variable} ${caveat.variable} ${dreamingOutloud.variable}`}>
       <body>
         <CartProvider>
           <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>

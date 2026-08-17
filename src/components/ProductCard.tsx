@@ -21,17 +21,20 @@ export default function ProductCard({ product: p }: ProductCardProps) {
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       onClick={() => router.push(`/producto/${p.id}`)}
-      style={{ cursor: "pointer", display: "flex", flexDirection: "column", gap: 12 }}
-    >
-      <div style={{
-        position: "relative",
-        borderRadius: "var(--radius)",
-        overflow: "hidden",
+      style={{
+        cursor: "pointer", display: "flex", flexDirection: "column", gap: 12,
+        background: "var(--surface)", borderRadius: "var(--radius)", padding: 12,
         boxShadow: hover ? "var(--shadow-hover)" : "var(--shadow)",
         transition: "box-shadow .2s ease, transform .2s ease",
         transform: hover ? "translateY(-3px)" : "none",
+      }}
+    >
+      <div style={{
+        position: "relative",
+        borderRadius: "var(--radius-sm)",
+        overflow: "hidden",
       }}>
-        <Photo label={`foto · ${p.name}`} tone={toneFor(p)} round={0} />
+        <Photo src={p.image} alt={p.name} label={`foto · ${p.name}`} tone={toneFor(p)} round={0} />
         {p.badge && (
           <span style={{
             position: "absolute", top: 12, left: 12,

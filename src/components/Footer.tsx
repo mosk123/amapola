@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 
 const TIENDA = [
   { label: "Sweaters", href: "/catalogo/sweaters" },
@@ -25,9 +26,13 @@ export default function Footer() {
       }}>
         {/* Marca */}
         <div>
-          <div style={{ font: "600 24px/1 var(--head-fam,'Cormorant Garamond',serif)", letterSpacing: ".06em", marginBottom: 12 }}>
-            AMAPOLA
-          </div>
+          <Image
+            src="/logo/wordmark-light.png"
+            alt="Amapola Knitwear"
+            width={112}
+            height={36}
+            style={{ objectFit: "contain", marginBottom: 12 }}
+          />
           <p style={{ margin: 0, font: "400 14px/1.6 var(--ui-font)", opacity: .8, maxWidth: 280 }}>
             Tejidos artesanales para abrigar a quienes querés. Hecho a mano, con tiempo y lanas nobles.
           </p>

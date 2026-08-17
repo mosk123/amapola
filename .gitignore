@@ -1,2 +1,12 @@
 node_modules
 .next/
+out/
+
+# variables de entorno — nunca commitear secretos reales
+.env*.local
+.env
+
+# sistema / editor
+.DS_Store
+*.pem
+npm-debug.log*
