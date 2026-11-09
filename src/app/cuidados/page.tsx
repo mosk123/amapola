@@ -71,7 +71,7 @@ export default function CarePage() {
             Seis pasos básicos
           </h2>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
+        <div className="grid-n" style={{ "--n": 3 } as React.CSSProperties}>
           {PASOS.map(({ icon, n, title, text }) => (
             <div key={n} style={{
               background: "var(--surface)", borderRadius: "var(--radius)",
@@ -108,7 +108,7 @@ export default function CarePage() {
               Lana vs algodón
             </h2>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+          <div className="split" style={{ gap: 24 }}>
             {FIBRAS.map(({ icon, title, items }) => (
               <div key={title} style={{
                 background: "var(--surface)", borderRadius: "var(--radius)",

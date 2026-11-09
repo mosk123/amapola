@@ -3,7 +3,7 @@
 type IconName =
   | "cart" | "search" | "menu" | "close" | "heart" | "arrow" | "back"
   | "plus" | "minus" | "check" | "star" | "leaf" | "truck" | "hand"
-  | "mail" | "pin" | "chat" | "instagram" | "clock" | "droplet"
+  | "mail" | "pin" | "chat" | "instagram" | "facebook" | "clock" | "droplet"
   | "sun" | "air" | "box" | "sparkle";
 
 interface IconProps {
@@ -47,6 +47,7 @@ export default function Icon({ name, size = 20, stroke = 1.6, className }: IconP
     pin: <><path d="M12 21s-6.5-5.4-6.5-10.5A6.5 6.5 0 0 1 12 4a6.5 6.5 0 0 1 6.5 6.5C18.5 15.6 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.4"/></>,
     chat: <><path d="M4 5h16v11H9l-4 4z"/><path d="M8 9.5h8M8 12.5h5"/></>,
     instagram: <><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="0.6" fill="currentColor"/></>,
+    facebook: <><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><path d="M15 8h-1.5A2 2 0 0 0 11.5 10v10.5M9 13h5"/></>,
     clock: <><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></>,
     droplet: <path d="M12 3.5c3 4 5.5 6.8 5.5 9.8A5.5 5.5 0 0 1 12 19a5.5 5.5 0 0 1-5.5-5.7c0-3 2.5-5.8 5.5-9.8z"/>,
     sun: <><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M5 5l1.8 1.8M17.2 17.2L19 19M19 5l-1.8 1.8M6.8 17.2L5 19"/></>,

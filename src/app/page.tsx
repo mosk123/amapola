@@ -6,26 +6,29 @@ import Photo from "@/components/Photo";
 import ProductCard from "@/components/ProductCard";
 import Icon from "@/components/Icon";
 
+// El número de modelos sale del catálogo, así se actualiza solo al agregar o sacar productos
 const STATS = [
   { n: "100%", l: "fibras naturales" },
-  { n: "+1.200", l: "prendas tejidas" },
+  { n: String(CATALOG_PRODUCTS.length), l: "modelos tejidos" },
   { n: "2-3", l: "sem · por encargo" },
 ];
 
-const CAT_TONES = ["caramel", "sage", "rosa"] as const;
+const CAT_TONES = ["caramel", "sage", "rosa", "blush"] as const;
 
-// Fotos a modo de ejemplo — reemplazar por las definitivas de cada categoría.
-const CAT_IMAGES = [
-  "https://res.cloudinary.com/ddtqy6ltq/image/upload/v1786832245/Amapola-18_hwzfix.jpg",
-  "https://res.cloudinary.com/ddtqy6ltq/image/upload/v1786832244/Amapola-38_sc6azn.jpg",
-  "https://res.cloudinary.com/ddtqy6ltq/image/upload/v1786832243/Amapola-01_hhy4yc.jpg",
-];
+// Fotos de prueba locales (public/images/products-web) — reemplazar por las definitivas en Cloudinary.
+const HERO_IMAGE = "/images/products-web/prueba-portada/portada2.jpg";
 
-const HANDMADE = [
-  { icon: "hand" as const, title: "Hecho a mano", text: "Cada pieza lleva horas de trabajo paciente con dos agujas o en telar." },
-  { icon: "leaf" as const, title: "Fibras nobles", text: "Lana merino, alpaca, algodón pima y lana de oveja sin teñir." },
-  { icon: "truck" as const, title: "Envío gratis", text: "En pedidos desde $60.000 a todo el país." },
-];
+// Una foto por categoría (las que no tienen muestran el placeholder)
+const CAT_IMAGES: Record<string, string> = {
+  sweaters:   "/images/products-web/prueba-sweater/rosa-1.jpg",
+  remeras:    "/images/products-web/prueba-remera/remeraVioleta-1.jpg",
+  pantalones: "/images/products-web/prueba-pantalon/pantalon.jpg",
+  vestidos:   "/images/products-web/prueba-vestido/vestidoVerde-1.jpg",
+  conjuntos:  "/images/products-web/prueba-conjunto/conjunto-diseño-marino-1.jpg",
+  enteritos:  "/images/products-web/prueba-body/azul-1.jpg",
+  cubrepanal: "/images/products-web/prueba-cubrepañal/cubrepañal.jpg",
+  bodys:      "/images/products-web/prueba-body/body-1.jpg",
+};
 
 export default function Home() {
   const badged = CATALOG_PRODUCTS.filter((p) => p.badge);
@@ -35,13 +38,12 @@ export default function Home() {
     <div>
       {/* HERO */}
       <section style={{ background: "var(--hero-bg)", borderBottom: "1px solid var(--line)" }}>
-        <div className="wrap" style={{
-          display: "grid", gridTemplateColumns: "1.05fr .95fr",
-          gap: "clamp(28px,4vw,60px)", alignItems: "center",
+        <div className="wrap split" style={{
+          "--cols": "1.05fr .95fr", alignItems: "center",
           padding: "clamp(40px,7vw,96px) var(--pad)",
-        }}>
+        } as React.CSSProperties}>
           <div style={{ display: "flex", flexDirection: "column", gap: 24, maxWidth: 520 }}>
-            <Eyebrow>Tejidos artesanales · desde 2019</Eyebrow>
+            <Eyebrow>Tejidos artesanales · desde 2026</Eyebrow>
             <h1 style={{
               margin: "0 0 8px", font: "var(--h1-font)", color: "var(--ink)",
               textTransform: "var(--head-transform)" as React.CSSProperties["textTransform"],
@@ -53,7 +55,7 @@ export default function Home() {
               </em>
             </h1>
             <p style={{ margin: 0, font: "400 17px/1.6 var(--ui-font)", color: "var(--ink-soft)", maxWidth: 440 }}>
-              Sweaters, accesorios y mantas tejidos en lanas y algodones naturales. Para mujeres, niños y rincones de casa que piden calorcito.
+              Sweaters, remeras, conjuntos y bodys tejidos en lanas y algodones naturales. Para niños y rincones de la casa que piden calorcito.
             </p>
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
               <Link href="/catalogo" style={BTN_SOLID}>
@@ -76,15 +78,15 @@ export default function Home() {
           {/* Foto hero + insignia */}
           <div style={{ position: "relative" }}>
             <Photo
-              src="https://res.cloudinary.com/ddtqy6ltq/image/upload/v1786832245/Amapola-69_gzv6di.jpg"
-              alt="Modelo con sweater tejido a mano"
+              src={HERO_IMAGE}
+              alt="Prendas tejidas a mano"
               label="foto principal · modelo con sweater tejido"
               tone="blush"
               ratio="4 / 5"
             />
             <div style={{
-              position: "absolute", bottom: -22, left: -22,
-              width: 132, height: 132, borderRadius: "50%",
+              position: "absolute", bottom: -22, left: "clamp(-22px, -2vw, 12px)",
+              width: "clamp(96px, 26vw, 132px)", height: "clamp(96px, 26vw, 132px)", borderRadius: "50%",
               background: "var(--surface)", boxShadow: "var(--shadow)",
               display: "grid", placeItems: "center", padding: 12,
             }}>
@@ -104,21 +106,21 @@ export default function Home() {
               textTransform: "var(--head-transform)" as React.CSSProperties["textTransform"],
               letterSpacing: "var(--head-tracking)",
             }}>
-              Tres familias, un mismo telar
+              Todo lo que tejemos
             </h2>
           </div>
           <Link href="/catalogo" style={LINK_BTN}>
             Ver todo <Icon name="arrow" size={15} />
           </Link>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
+        <div className="grid-n2 carousel-mobile" style={{ "--n": 4 } as React.CSSProperties}>
           {CATEGORIES.map((c, i) => (
             <Link key={c.id} href={`/catalogo/${c.id}`} style={{ textDecoration: "none", display: "flex", flexDirection: "column", gap: 14 }}>
               <Photo
-                src={CAT_IMAGES[i]}
+                src={CAT_IMAGES[c.id]}
                 alt={c.label}
                 label={`foto · ${c.label.toLowerCase()}`}
-                tone={CAT_TONES[i]}
+                tone={CAT_TONES[i % CAT_TONES.length]}
                 ratio="3 / 4"
               />
               <div>
@@ -143,32 +145,11 @@ export default function Home() {
               Prendas destacadas
             </h2>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 280px))", gap: 24, justifyContent: "center" }}>
+          <div className="grid-cards">
             {featured.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* HECHO A MANO */}
-      <section className="wrap" style={{ padding: "clamp(48px,6vw,84px) var(--pad)" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 28 }}>
-          {HANDMADE.map(({ icon, title, text }) => (
-            <div key={title} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              <span style={{
-                width: 48, height: 48, borderRadius: "var(--radius-sm)",
-                background: "var(--bg-2)", display: "grid", placeItems: "center",
-                color: "var(--accent)",
-              }}>
-                <Icon name={icon} size={22} />
-              </span>
-              <div>
-                <h3 style={{ margin: "0 0 6px", font: "var(--h3-font)", color: "var(--ink)" }}>{title}</h3>
-                <p style={{ margin: 0, font: "400 14px/1.6 var(--ui-font)", color: "var(--ink-soft)" }}>{text}</p>
-              </div>
-            </div>
-          ))}
         </div>
       </section>
     </div>

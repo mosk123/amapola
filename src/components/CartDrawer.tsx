@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
-import { COLORS, fmt, getCrossSellProducts, toneFor } from "@/lib/data";
+import { COLORS, fmt, getCrossSellProducts, getImages, toneFor } from "@/lib/data";
 import Photo from "./Photo";
 import Btn from "./Btn";
 import Icon from "./Icon";
@@ -70,7 +70,7 @@ export default function CartDrawer() {
               {items.map((it, idx) => (
                 <div key={idx} style={{ display: "flex", gap: 14, padding: "16px 0", borderBottom: "1px solid var(--line)" }}>
                   <div style={{ width: 76, flexShrink: 0 }}>
-                    <Photo label="" tone="caramel" ratio="4/5" round="var(--radius-sm)" />
+                    <Photo src={getImages(it, it.color)[0]} alt={it.name} tone={toneFor(it)} ratio="4/5" round="var(--radius-sm)" />
                   </div>
                   <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 5 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
@@ -113,7 +113,7 @@ export default function CartDrawer() {
                           cursor: "pointer", textAlign: "left",
                         }}
                       >
-                        <Photo src={p.image} alt={p.name} tone={toneFor(p)} ratio="1 / 1" round="var(--radius-sm)" />
+                        <Photo src={getImages(p)[0]} alt={p.name} tone={toneFor(p)} ratio="1 / 1" round="var(--radius-sm)" />
                         <span style={{ font: "600 11px/1.25 var(--ui-font)", color: "var(--ink)" }}>{p.name}</span>
                         <span style={{ font: "700 11px/1 var(--ui-font)", color: "var(--accent)" }}>{fmt(p.price)}</span>
                       </button>

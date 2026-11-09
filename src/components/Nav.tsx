@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -17,6 +18,20 @@ const LINKS = [
 export default function Nav() {
   const pathname = usePathname();
   const { cartCount, openCart } = useCart();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  // Cerrar el menú al cambiar de página
+  const [lastPath, setLastPath] = useState(pathname);
+  if (pathname !== lastPath) {
+    setLastPath(pathname);
+    setMenuOpen(false);
+  }
+
+  // Con el menú abierto no se scrollea la página de atrás
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [menuOpen]);
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
@@ -38,13 +53,13 @@ export default function Nav() {
             alt="Amapola Knitwear"
             width={150}
             height={48}
-            style={{ objectFit: "contain" }}
+            style={{ objectFit: "contain", width: "clamp(118px, 30vw, 150px)", height: "auto" }}
             priority
           />
         </Link>
 
-        {/* Links */}
-        <nav style={{ display: "flex", gap: 4, marginLeft: 18 }}>
+        {/* Links (desktop) */}
+        <nav className="nav-links" style={{ display: "flex", gap: 4, marginLeft: 18 }}>
           {LINKS.map(({ href, label }) => {
             const active = isActive(href);
             return (
@@ -68,10 +83,10 @@ export default function Nav() {
           })}
         </nav>
 
-        {/* Iconos derecha */}
-        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 6 }}>
-          <button style={ICON_BTN} aria-label="Buscar"><Icon name="search" /></button>
-          <button style={ICON_BTN} aria-label="Favoritos"><Icon name="heart" /></button>
+        {/* Iconos derecha — buscar y favoritos todavía no hacen nada: en mobile no se muestran */}
+        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 2 }}>
+          <button className="hide-mobile" style={ICON_BTN} aria-label="Buscar"><Icon name="search" /></button>
+          <button className="hide-mobile" style={ICON_BTN} aria-label="Favoritos"><Icon name="heart" /></button>
           <button
             onClick={openCart}
             style={{ ...ICON_BTN, position: "relative" }}
@@ -88,7 +103,53 @@ export default function Nav() {
               </span>
             )}
           </button>
+          <button
+            className="nav-burger"
+            onClick={() => setMenuOpen((o) => !o)}
+            style={ICON_BTN}
+            aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
+            aria-expanded={menuOpen}
+          >
+            <Icon name={menuOpen ? "close" : "menu"} />
+          </button>
         </div>
+      </div>
+
+      {/* Menú desplegable (mobile / tablet) */}
+      <div
+        className="nav-drawer"
+        style={{
+          position: "absolute", top: "100%", left: 0, right: 0, height: "calc(100dvh - 100%)",
+          background: "var(--ink)",
+          opacity: menuOpen ? 1 : 0,
+          visibility: menuOpen ? "visible" : "hidden",
+          transform: menuOpen ? "none" : "translateY(-8px)",
+          transition: "opacity .2s ease, transform .2s ease, visibility .2s",
+          overflowY: "auto",
+        }}
+      >
+        <nav style={{ display: "flex", flexDirection: "column", padding: "12px var(--pad) 32px" }}>
+          {LINKS.map(({ href, label }) => {
+            const active = isActive(href);
+            return (
+              <Link
+                key={href}
+                href={href}
+                onClick={() => setMenuOpen(false)}
+                style={{
+                  display: "flex", alignItems: "center", justifyContent: "space-between",
+                  padding: "18px 0", borderBottom: "1px solid rgba(255,255,255,.1)",
+                  font: "500 26px/1 var(--head-fam)",
+                  color: active ? "var(--accent)" : "var(--bg)",
+                  textDecoration: "none",
+                }}
+              >
+                {label}
+                <Icon name="arrow" size={18} />
+              </Link>
+            );
+          })}
+        </nav>
       </div>
     </header>
   );

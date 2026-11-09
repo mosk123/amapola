@@ -17,7 +17,12 @@ export default function ColorDots({ colors, size = 16, selected, onSelect }: Col
         <button
           key={c}
           title={COLORS[c]?.label}
-          onClick={() => onSelect?.(c)}
+          aria-label={COLORS[c]?.label}
+          onClick={(e) => {
+            if (!onSelect) return;
+            e.stopPropagation(); // en la card, elegir color no abre el producto
+            onSelect(c);
+          }}
           style={{
             width: size,
             height: size,

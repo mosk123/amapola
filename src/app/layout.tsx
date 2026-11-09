@@ -39,7 +39,7 @@ const dreamingOutloud = localFont({
 
 export const metadata: Metadata = {
   title: "Amapola — Tejidos Artesanales",
-  description: "Sweaters, accesorios y mantas tejidos a mano con lanas y algodones naturales. Para mujeres, niños y el hogar.",
+  description: "Sweaters, remeras, conjuntos y bodys tejidos a mano con lanas y algodones naturales. Para niños y el hogar.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

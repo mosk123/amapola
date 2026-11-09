@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import type { ImageTone } from "@/types";
 
@@ -12,6 +13,9 @@ const TONES: Record<ImageTone, [string, string]> = {
 
 interface PhotoProps {
   src?: string;
+  /** Segunda foto, se muestra encima (con fundido) cuando `showAlt` es true. */
+  altSrc?: string;
+  showAlt?: boolean;
   alt?: string;
   label?: string;
   tone?: ImageTone;
@@ -23,6 +27,8 @@ interface PhotoProps {
 
 export default function Photo({
   src,
+  altSrc,
+  showAlt = false,
   alt,
   label = "",
   tone = "blush",
@@ -32,6 +38,11 @@ export default function Photo({
   children,
 }: PhotoProps) {
   const [a, b] = TONES[tone];
+  // Fotos que fallaron al cargar (ej: todavía no se copiaron a la carpeta) → se muestra el placeholder
+  const [failed, setFailed] = useState<Record<string, true>>({});
+  const markFailed = (s: string) => setFailed((f) => ({ ...f, [s]: true }));
+  const okSrc = src && !failed[src] ? src : undefined;
+  const okAlt = altSrc && !failed[altSrc] ? altSrc : undefined;
   const borderRadius = round != null ? round : "var(--radius)";
 
   return (
@@ -43,16 +54,17 @@ export default function Photo({
         width: "100%",
         overflow: "hidden",
         borderRadius,
-        background: src ? undefined : `repeating-linear-gradient(135deg, ${a} 0 9px, ${b} 9px 18px)`,
+        background: okSrc ? undefined : `repeating-linear-gradient(135deg, ${a} 0 9px, ${b} 9px 18px)`,
       }}
     >
-      {src ? (
+      {okSrc ? (
         <Image
-          src={src}
+          src={okSrc}
           alt={alt || label || ""}
           fill
           sizes="(max-width: 768px) 100vw, 50vw"
           style={{ objectFit: "cover" }}
+          onError={() => markFailed(okSrc)}
         />
       ) : (
         <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center" }}>
@@ -71,6 +83,16 @@ export default function Photo({
             </span>
           )}
         </div>
+      )}
+      {okSrc && okAlt && (
+        <Image
+          src={okAlt}
+          alt={alt || label || ""}
+          fill
+          sizes="(max-width: 768px) 100vw, 50vw"
+          style={{ objectFit: "cover", opacity: showAlt ? 1 : 0, transition: "opacity .35s ease" }}
+          onError={() => markFailed(okAlt)}
+        />
       )}
       {children}
     </div>

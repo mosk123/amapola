@@ -10,3 +10,7 @@ out/
 .DS_Store
 *.pem
 npm-debug.log*
+
+# fotos de prueba locales (las definitivas van a Cloudinary)
+public/images/products/
+public/images/products-web/

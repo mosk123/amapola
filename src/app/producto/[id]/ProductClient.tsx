@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { COLORS, getRelatedProducts, fmt, toneFor } from "@/lib/data";
+import { COLORS, availableSizes, getCover, getImages, getRelatedProducts, fmt, toneFor } from "@/lib/data";
 import { useCart } from "@/context/CartContext";
 import type { Product, ColorKey } from "@/types";
 import Photo from "@/components/Photo";
@@ -10,24 +10,57 @@ import Btn from "@/components/Btn";
 import Eyebrow from "@/components/Eyebrow";
 import Icon from "@/components/Icon";
 import ProductCard from "@/components/ProductCard";
+import SizeGuide from "@/components/SizeGuide";
 
 interface Props {
   product: Product;
+  initialColor?: ColorKey;
 }
 
-const STARS = 5;
+// Va en todos los productos; debajo se agrega la composición de cada uno
+const DESCRIPCION_FIJA = "Prenda realizada a mano con agujas circulares.";
 
-export default function ProductClient({ product: p }: Props) {
-  const [color, setColor] = useState<ColorKey>(p.colors[0]);
-  const [size, setSize] = useState(p.sizes[0]);
+export default function ProductClient({ product: p, initialColor }: Props) {
+  // Con portada (cover) arranca sin color elegido mostrando la portada; al elegir color se pasa a sus fotos
+  const [color, setColor] = useState<ColorKey | null>(initialColor ?? (p.cover ? null : p.colors[0]));
+  const [photo, setPhoto] = useState(0);
+  const [size, setSize] = useState<string | undefined>(undefined);
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
+  const [guideOpen, setGuideOpen] = useState(false);
   const { addToCart } = useCart();
 
+  // Talles con stock para el color elegido; si el talle elegido no está, pasa al primero que haya
+  const avail = availableSizes(p, color);
+  const currentSize = size && avail.includes(size) ? size : avail[0];
+  // Conjuntos: talle fijo de cada pieza
+  const pieces = color ? p.pieces?.[color] : undefined;
+  // Agotado = color vendido (cartel en la foto); sin stock = ese color no tiene ningún talle
+  const isSoldOut = !!color && !!p.soldOut?.includes(color);
+  const soldOut = isSoldOut || (!!color && !pieces && avail.length === 0);
+  const cartSize = pieces ? pieces.map((pc) => `${pc.name} ${pc.size}`).join(" · ") : currentSize;
+
+  // Guía de talles: resalta el talle elegido (o el de cada pieza en conjuntos)
+  const guideHighlight: Record<string, string | undefined> = pieces
+    ? Object.fromEntries(pieces.map((pc) => [pc.name, pc.size]))
+    : Object.fromEntries((p.measures ?? []).map((t) => [t.title ?? "", currentSize]));
+  const guideLink = p.measures?.length ? (
+    <button onClick={() => setGuideOpen(true)} style={GUIDE_LINK}>Ver guía de talles</button>
+  ) : null;
+
   const related = getRelatedProducts(p);
+  const images = color ? getImages(p, color) : getCover(p);
+  const mainImage = images[photo] ?? images[0];
+  const step = (d: number) => setPhoto((i) => (i + d + images.length) % images.length);
+
+  const selectColor = (c: ColorKey) => {
+    setColor(c);
+    setPhoto(0); // cada color arranca por su primera foto
+  };
 
   const handleAdd = () => {
-    addToCart(p, color, size);
+    if (!color || soldOut || !cartSize) return;
+    addToCart(p, color, cartSize);
     setAdded(true);
     setTimeout(() => setAdded(false), 1800);
   };
@@ -47,21 +80,59 @@ export default function ProductClient({ product: p }: Props) {
         </Link>
 
         {/* Grid principal */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(28px,4vw,60px)", alignItems: "start" }}>
+        <div className="split" style={{ alignItems: "start" }}>
           {/* Fotos */}
-          <div style={{ position: "sticky", top: 92 }}>
-            <Photo src={p.image} alt={p.name} label={`foto · ${p.name}`} tone={toneFor(p)} ratio="4 / 5" />
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginTop: 12 }}>
-              {[0, 1, 2, 3].map((i) => (
-                <div key={i} style={{
-                  borderRadius: "var(--radius-sm)", overflow: "hidden",
-                  border: i === 0 ? "2px solid var(--accent)" : "2px solid transparent",
-                  cursor: "pointer",
+          <div className="sticky-desktop">
+            <Photo key={mainImage} src={mainImage} alt={color ? `${p.name} · ${COLORS[color]?.label}` : p.name} label={`foto · ${p.name}`} tone={toneFor(p)} ratio="4 / 5">
+              {images.length > 1 && (
+                <>
+                  <button onClick={() => step(-1)} aria-label="Foto anterior" style={{ ...ARROW_BTN, left: 12 }}>
+                    <Icon name="back" size={18} />
+                  </button>
+                  <button onClick={() => step(1)} aria-label="Foto siguiente" style={{ ...ARROW_BTN, right: 12 }}>
+                    <Icon name="arrow" size={18} />
+                  </button>
+                  <span style={{
+                    position: "absolute", bottom: 12, right: 12,
+                    font: "600 11px/1 var(--ui-font)", color: "var(--ink)",
+                    background: "color-mix(in srgb, var(--surface) 85%, transparent)",
+                    padding: "6px 10px", borderRadius: 999,
+                  }}>
+                    {photo + 1} / {images.length}
+                  </span>
+                </>
+              )}
+              {isSoldOut && (
+                <span aria-label="Agotado" style={{
+                  position: "absolute", top: 30, right: -46, width: 190, transform: "rotate(45deg)",
+                  padding: "9px 0", textAlign: "center", pointerEvents: "none",
+                  background: "var(--ink)", color: "var(--bg)",
+                  font: "700 12px/1 var(--ui-font)", letterSpacing: ".18em", textTransform: "uppercase",
+                  boxShadow: "0 4px 12px rgba(60,48,40,.25)",
                 }}>
-                  <Photo label="" tone={toneFor(p)} ratio="1 / 1" round={0} />
-                </div>
-              ))}
-            </div>
+                  Agotado
+                </span>
+              )}
+            </Photo>
+            {images.length > 1 && (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginTop: 12 }}>
+                {images.map((src, i) => (
+                  <button
+                    key={src}
+                    onClick={() => setPhoto(i)}
+                    aria-label={`Ver foto ${i + 1}`}
+                    style={{
+                      padding: 0, background: "none",
+                      borderRadius: "var(--radius-sm)", overflow: "hidden",
+                      border: i === photo ? "2px solid var(--accent)" : "2px solid transparent",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <Photo src={src} alt="" tone={toneFor(p)} ratio="1 / 1" round={0} />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Info */}
@@ -87,29 +158,28 @@ export default function ProductClient({ product: p }: Props) {
               {p.name}
             </h1>
 
-            {/* Precio + estrellas */}
-            <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-              <span style={{ font: "700 26px/1 var(--ui-font)", color: "var(--ink)" }}>{fmt(p.price)}</span>
-              <div style={{ display: "flex", gap: 2, color: "var(--accent)" }}>
-                {Array.from({ length: STARS }).map((_, i) => (
-                  <Icon key={i} name="star" size={16} stroke={0} />
-                ))}
-              </div>
-              <span style={{ font: "400 13px/1 var(--ui-font)", color: "var(--muted)" }}>(28 reseñas)</span>
-            </div>
+            <span style={{ font: "700 26px/1 var(--ui-font)", color: "var(--ink)" }}>{fmt(p.price)}</span>
 
-            <p style={{ margin: 0, font: "400 15px/1.6 var(--ui-font)", color: "var(--ink-soft)" }}>{p.desc}</p>
+            {/* Descripción: texto fijo + composición (grosor del hilo) */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+              <p style={{ margin: 0, font: "400 15px/1.6 var(--ui-font)", color: "var(--ink-soft)" }}>{DESCRIPCION_FIJA}</p>
+              {p.composition && (
+                <p style={{ margin: 0, font: "400 15px/1.6 var(--ui-font)", color: "var(--ink-soft)" }}>
+                  <strong style={{ fontWeight: 600, color: "var(--ink)" }}>Composición:</strong> {p.composition}
+                </p>
+              )}
+            </div>
 
             {/* Color */}
             <div>
               <p style={{ margin: "0 0 10px", font: "600 13px/1 var(--ui-font)", color: "var(--ink)" }}>
-                Color: <span style={{ color: "var(--ink-soft)", fontWeight: 400 }}>{COLORS[color]?.label}</span>
+                Color: <span style={{ color: "var(--ink-soft)", fontWeight: 400 }}>{color ? COLORS[color]?.label : "elegí uno"}</span>
               </p>
               <div style={{ display: "flex", gap: 10 }}>
                 {p.colors.map((c) => (
                   <button
                     key={c}
-                    onClick={() => setColor(c)}
+                    onClick={() => selectColor(c)}
                     title={COLORS[c]?.label}
                     style={{
                       width: 38, height: 38, borderRadius: "50%",
@@ -124,33 +194,66 @@ export default function ProductClient({ product: p }: Props) {
               </div>
             </div>
 
-            {/* Talle */}
-            <div>
-              <p style={{ margin: "0 0 10px", font: "600 13px/1 var(--ui-font)", color: "var(--ink)" }}>Talle</p>
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                {p.sizes.map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => setSize(s)}
-                    style={{
-                      padding: "9px 18px", borderRadius: "var(--btn-radius)",
-                      border: `1.5px solid ${size === s ? "var(--ink)" : "var(--line-strong)"}`,
-                      background: size === s ? "var(--ink)" : "var(--surface)",
-                      color: size === s ? "var(--bg)" : "var(--ink)",
-                      font: "600 13px/1 var(--ui-font)", cursor: "pointer",
-                      transition: "all .15s ease",
-                    }}
-                  >
-                    {s}
-                  </button>
-                ))}
+            {/* Talle — en conjuntos, el talle de cada pieza */}
+            {pieces ? (
+              <div>
+                <div style={LABEL_ROW}>
+                  <p style={{ margin: 0, font: "600 13px/1 var(--ui-font)", color: "var(--ink)" }}>Talles del conjunto</p>
+                  {guideLink}
+                </div>
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  {pieces.map((pc) => (
+                    <span key={pc.name} style={{
+                      padding: "9px 16px", borderRadius: "var(--btn-radius)",
+                      border: "1.5px solid var(--line-strong)", background: "var(--surface)",
+                      font: "600 13px/1 var(--ui-font)", color: "var(--ink)",
+                    }}>
+                      {pc.name} <span style={{ color: "var(--ink-soft)", fontWeight: 400 }}>· {pc.size}</span>
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
+            ) : (
+              <div>
+                <div style={LABEL_ROW}>
+                  <p style={{ margin: 0, font: "600 13px/1 var(--ui-font)", color: "var(--ink)" }}>
+                    Talle{soldOut && !isSoldOut && <span style={{ color: "var(--muted)", fontWeight: 400 }}> · sin stock en este color</span>}
+                  </p>
+                  {guideLink}
+                </div>
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  {p.sizes.map((s) => {
+                    const ok = avail.includes(s);
+                    const on = ok && currentSize === s;
+                    return (
+                      <button
+                        key={s}
+                        onClick={() => setSize(s)}
+                        disabled={!ok}
+                        title={ok ? undefined : "Sin stock"}
+                        style={{
+                          padding: "9px 18px", borderRadius: "var(--btn-radius)",
+                          border: `1.5px solid ${on ? "var(--ink)" : "var(--line-strong)"}`,
+                          background: on ? "var(--ink)" : ok ? "var(--surface)" : "transparent",
+                          color: on ? "var(--bg)" : ok ? "var(--ink)" : "var(--muted)",
+                          textDecoration: ok ? "none" : "line-through",
+                          opacity: ok ? 1 : 0.55,
+                          font: "600 13px/1 var(--ui-font)", cursor: ok ? "pointer" : "not-allowed",
+                          transition: "all .15s ease",
+                        }}
+                      >
+                        {s}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             {/* Cantidad + Agregar */}
-            <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+            <div className="buy-bar" style={{ display: "flex", gap: 12, alignItems: "center" }}>
               <div style={{
-                display: "flex", alignItems: "center",
+                display: "flex", alignItems: "center", flexShrink: 0,
                 border: "1.5px solid var(--line-strong)", borderRadius: "var(--btn-radius)",
               }}>
                 <button
@@ -167,10 +270,10 @@ export default function ProductClient({ product: p }: Props) {
                 </button>
               </div>
 
-              <Btn size="lg" full onClick={handleAdd}>
+              <Btn size="lg" full onClick={handleAdd} disabled={!color || soldOut}>
                 {added
                   ? <><Icon name="check" size={16} /> Agregado</>
-                  : "Agregar al carrito"
+                  : !color ? "Elegí un color" : isSoldOut ? "Agotado" : soldOut ? "Sin stock" : "Agregar al carrito"
                 }
               </Btn>
             </div>
@@ -205,17 +308,39 @@ export default function ProductClient({ product: p }: Props) {
             }}>
               También tejimos
             </h2>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
+            <div className="grid-cards">
               {related.map((rp) => <ProductCard key={rp.id} product={rp} />)}
             </div>
           </div>
         )}
       </div>
+
+      {p.measures && (
+        <SizeGuide open={guideOpen} onClose={() => setGuideOpen(false)} tables={p.measures} highlight={guideHighlight} />
+      )}
     </div>
   );
 }
 
+const ARROW_BTN: React.CSSProperties = {
+  position: "absolute", top: "50%", transform: "translateY(-50%)",
+  width: 40, height: 40, borderRadius: "50%", display: "grid", placeItems: "center",
+  border: "none", cursor: "pointer", color: "var(--ink)",
+  background: "color-mix(in srgb, var(--surface) 85%, transparent)",
+  boxShadow: "0 2px 8px rgba(60,48,40,.15)",
+};
+
 const QTY_BTN: React.CSSProperties = {
   width: 40, height: 40, display: "grid", placeItems: "center",
   border: "none", background: "none", color: "var(--ink)", cursor: "pointer",
+};
+
+const LABEL_ROW: React.CSSProperties = {
+  display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 12, marginBottom: 10,
+};
+
+const GUIDE_LINK: React.CSSProperties = {
+  padding: 0, border: "none", background: "none", cursor: "pointer",
+  font: "600 12px/1 var(--ui-font)", color: "var(--ink-soft)",
+  textDecoration: "underline", textUnderlineOffset: 3,
 };

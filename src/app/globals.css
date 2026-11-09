@@ -85,6 +85,170 @@ em {
   color: var(--accent);
 }
 
+/* ── Layout responsive ──
+   Los estilos de los componentes son inline (sin media queries), así que lo que cambia
+   en mobile vive acá. Breakpoints: tablet < 900px, mobile < 640px. */
+
+/* Dos columnas que se apilan en mobile. Proporción por variable: style={{ "--cols": "1.2fr .8fr" }} */
+.split {
+  display: grid;
+  grid-template-columns: var(--cols, 1fr 1fr);
+  gap: clamp(28px, 4vw, 60px);
+}
+
+/* Grilla de N columnas (--n), que baja a 2 en tablet y a 1 en mobile */
+.grid-n {
+  display: grid;
+  grid-template-columns: repeat(var(--n, 3), 1fr);
+  gap: var(--gap, 24px);
+}
+
+/* Igual que .grid-n pero en mobile queda en 2 columnas (categorías, tejedoras) */
+.grid-n2 {
+  display: grid;
+  grid-template-columns: repeat(var(--n, 3), 1fr);
+  gap: var(--gap, 20px);
+}
+
+/* Grilla de cards de producto */
+.grid-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 280px));
+  gap: 24px;
+  justify-content: center;
+}
+
+/* Variante que ocupa todo el ancho del .wrap: las cards arrancan en el mismo margen que el resto */
+.grid-cards--fill {
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  justify-content: stretch;
+}
+
+/* Centrado solo en desktop (en mobile queda alineado a la izquierda) */
+@media (min-width: 640px) {
+  .center-desktop { text-align: center; }
+}
+
+/* Campos de formulario de a dos */
+.form-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
+  gap: 36px;
+}
+
+.sticky-desktop {
+  position: sticky;
+  top: 92px;
+}
+
+/* Fila de chips que en mobile se desliza horizontal en vez de ocupar varias líneas */
+.chip-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Card de producto: en mobile se compacta (2 por fila) */
+.pcard { padding: 12px; gap: 12px; }
+.pcard-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.pcard-title { font: var(--card-title-font); }
+
+/* Header: links completos desde 900px; debajo, menú hamburguesa */
+@media (min-width: 900px) {
+  .nav-burger, .nav-drawer { display: none !important; }
+}
+@media (max-width: 899px) {
+  .nav-links { display: none !important; }
+}
+
+/* .show-mobile se oculta desde 640px (en mobile manda su display inline) */
+@media (min-width: 640px) {
+  .show-mobile { display: none !important; }
+}
+
+@media (max-width: 899px) {
+  .grid-n, .grid-n2 { grid-template-columns: repeat(min(var(--n, 3), 2), 1fr); }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .footer-grid > :first-child, .footer-grid > :last-child { grid-column: 1 / -1; }
+  .hide-tablet { display: none !important; }
+}
+
+@media (max-width: 767px) {
+  .split { grid-template-columns: 1fr; }
+  .sticky-desktop { position: static; }
+}
+
+@media (max-width: 639px) {
+  .hide-mobile { display: none !important; }
+
+  .grid-n { grid-template-columns: 1fr; }
+  .grid-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .form-2 { grid-template-columns: 1fr; }
+
+  .chip-row {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin: 0 calc(-1 * var(--pad));
+    padding: 2px var(--pad);
+  }
+  .chip-row::-webkit-scrollbar { display: none; }
+  .chip-row > * { flex-shrink: 0; }
+
+  /* Catálogo: el menú de "Filtrar" se alinea al borde derecho del botón para no salirse de la pantalla */
+  .filter-menu { left: auto !important; right: 0; }
+
+  /* Catálogo: personajes del fondo más chicos para no tapar las cards */
+  .catalog-character { width: 72px !important; opacity: .35 !important; }
+
+  /* Grilla que en mobile pasa a carrusel horizontal con snap (categorías del inicio) */
+  .carousel-mobile {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 44%;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    margin: 0 calc(-1 * var(--pad));
+    padding: 0 var(--pad) 4px;
+    scroll-padding: 0 var(--pad);
+  }
+  .carousel-mobile::-webkit-scrollbar { display: none; }
+  .carousel-mobile > * { scroll-snap-align: start; }
+
+  .pcard { padding: 8px; gap: 8px; }
+  .pcard-head { flex-direction: column; gap: 2px; }
+  .pcard-title { font-size: 16px; }
+
+  /* Paneles (guía de talles): en mobile se abren desde abajo */
+  .sheet-overlay { place-items: end center !important; padding: 0 !important; }
+  .sheet-panel {
+    width: 100% !important;
+    max-height: 88dvh !important;
+    border-radius: 20px 20px 0 0 !important;
+    padding-bottom: calc(28px + env(safe-area-inset-bottom)) !important;
+  }
+
+  /* Barra de compra fija abajo en la página de producto */
+  .buy-bar {
+    position: sticky;
+    bottom: 0;
+    z-index: 20;
+    margin: 0 calc(-1 * var(--pad));
+    padding: 12px var(--pad) calc(12px + env(safe-area-inset-bottom));
+    background: color-mix(in srgb, var(--bg) 94%, transparent);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid var(--line);
+  }
+}
+
 /* Scrollbar sutil */
 ::-webkit-scrollbar {
   width: 6px;

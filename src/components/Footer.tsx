@@ -2,11 +2,10 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { CATEGORIES } from "@/lib/data";
 
 const TIENDA = [
-  { label: "Sweaters", href: "/catalogo/sweaters" },
-  { label: "Accesorios", href: "/catalogo/accesorios" },
-  { label: "Mantas", href: "/catalogo/mantas" },
+  ...CATEGORIES.map((c) => ({ label: c.label, href: `/catalogo/${c.id}` })),
   { label: "Catálogo", href: "/catalogo" },
 ];
 
@@ -20,10 +19,7 @@ const AMAPOLA = [
 export default function Footer() {
   return (
     <footer style={{ background: "var(--ink)", color: "var(--bg)", marginTop: 0 }}>
-      <div className="wrap" style={{
-        padding: "56px var(--pad) 40px",
-        display: "grid", gridTemplateColumns: "1.4fr 1fr 1fr 1.2fr", gap: 36,
-      }}>
+      <div className="wrap footer-grid" style={{ padding: "clamp(40px, 8vw, 56px) var(--pad) 40px" }}>
         {/* Marca */}
         <div>
           <Image

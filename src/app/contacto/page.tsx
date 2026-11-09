@@ -5,23 +5,16 @@ import Eyebrow from "@/components/Eyebrow";
 import Icon from "@/components/Icon";
 
 const CANALES = [
-  { icon: "chat" as const, label: "WhatsApp", value: "+54 9 11 0000-0000", note: "Lun–Vie 10–18 h" },
-  { icon: "mail" as const, label: "Email", value: "hola@amapola.com.ar", note: "Respondemos en 24 h" },
-  { icon: "instagram" as const, label: "Instagram", value: "@amapola.tejidos", note: "DM siempre abierto" },
-  { icon: "pin" as const, label: "El taller", value: "Buenos Aires, Argentina", note: "Solo con turno previo" },
-];
-
-const ASUNTOS = [
-  "Consulta de producto",
-  "Encargo personalizado",
-  "Cuidados y reparaciones",
-  "Mayorista",
-  "Otro",
+  { icon: "chat" as const, label: "WhatsApp", value: "+54 9 2324-314833", note: "Lun–Vie 10–18 h" },
+  { icon: "mail" as const, label: "Email", value: "amapola.knitwear@gmail.com", note: "Respondemos en 24 h" },
+  { icon: "instagram" as const, label: "Instagram", value: "@amapola.knit", note: "DM siempre abierto" },
+  { icon: "facebook" as const, label: "Facebook", value: "amapola.knitwear", note: "Seguinos y escribinos" },
+  // { icon: "pin" as const, label: "El taller", value: "Buenos Aires, Argentina", note: "Solo con turno previo" },
 ];
 
 export default function ContactPage() {
   const [sent, setSent] = useState(false);
-  const [form, setForm] = useState({ nombre: "", email: "", asunto: ASUNTOS[0], mensaje: "" });
+  const [form, setForm] = useState({ nombre: "", email: "", mensaje: "" });
 
   const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -33,7 +26,7 @@ export default function ContactPage() {
       {/* Grid formulario + canales */}
       <section style={{ background: "var(--bg-2)" }}>
         <div className="wrap" style={{ padding: "clamp(48px,6vw,84px) var(--pad)" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1.15fr .85fr", gap: "clamp(28px,4vw,60px)" }}>
+          <div className="split" style={{ "--cols": "1.15fr .85fr" } as React.CSSProperties}>
 
             {/* Formulario */}
             <div style={{
@@ -67,7 +60,7 @@ export default function ContactPage() {
                       Te respondemos en menos de 24 horas. ¡Gracias por escribirnos!
                     </p>
                     <button
-                      onClick={() => { setSent(false); setForm({ nombre: "", email: "", asunto: ASUNTOS[0], mensaje: "" }); }}
+                      onClick={() => { setSent(false); setForm({ nombre: "", email: "", mensaje: "" }); }}
                       style={{
                         marginTop: 8, padding: "11px 24px", borderRadius: "var(--btn-radius)",
                         border: "1.5px solid var(--line-strong)", background: "transparent",
@@ -87,7 +80,7 @@ export default function ContactPage() {
                     </div>
 
                     <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                      <div className="form-2" style={{ gap: 16 }}>
                         <FormField label="Nombre *">
                           <input
                             required value={form.nombre}
@@ -106,15 +99,6 @@ export default function ContactPage() {
                         </FormField>
                       </div>
 
-                      <FormField label="Asunto">
-                        <select
-                          value={form.asunto}
-                          onChange={(e) => setForm((f) => ({ ...f, asunto: e.target.value }))}
-                          style={{ ...INPUT, cursor: "pointer" }}
-                        >
-                          {ASUNTOS.map((a) => <option key={a}>{a}</option>)}
-                        </select>
-                      </FormField>
 
                       <FormField label="Mensaje *">
                         <textarea

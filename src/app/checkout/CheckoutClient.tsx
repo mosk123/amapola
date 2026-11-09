@@ -223,12 +223,12 @@ export default function CheckoutClient() {
           Finalizá tu compra
         </h1>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1.3fr .9fr", gap: "clamp(28px,4vw,60px)", alignItems: "start" }}>
+        <div className="split" style={{ "--cols": "1.3fr .9fr", alignItems: "start" } as React.CSSProperties}>
           {/* Formulario */}
           <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
             <section>
               <h2 style={SECTION_TITLE}><Icon name="mail" size={16} /> Contacto</h2>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+              <div className="form-2">
                 <Field label="Nombre y apellido" value={form.name} onChange={(v) => updateField("name", v)} full />
                 <Field label="Email" type="email" value={form.email} onChange={(v) => updateField("email", v)} />
                 <Field label="Teléfono" type="tel" value={form.phone} onChange={(v) => updateField("phone", v)} />
@@ -237,7 +237,7 @@ export default function CheckoutClient() {
 
             <section>
               <h2 style={SECTION_TITLE}><Icon name="pin" size={16} /> Dirección de envío</h2>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+              <div className="form-2">
                 <Field label="Calle y número" value={form.street} onChange={(v) => updateField("street", v)} full />
                 <Field label="Ciudad" value={form.city} onChange={(v) => updateField("city", v)} />
                 <Field label="Provincia" value={form.province} onChange={(v) => updateField("province", v)} />
@@ -269,7 +269,7 @@ export default function CheckoutClient() {
 
             <section>
               <h2 style={SECTION_TITLE}><Icon name="sparkle" size={16} /> Método de pago</h2>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+              <div className="form-2">
                 {PAYMENT_METHODS.map((m) => {
                   const selected = paymentMethod === m.id;
                   return (
@@ -313,8 +313,8 @@ export default function CheckoutClient() {
           </div>
 
           {/* Resumen */}
-          <div style={{
-            position: "sticky", top: 92, display: "flex", flexDirection: "column", gap: 16,
+          <div className="sticky-desktop" style={{
+            display: "flex", flexDirection: "column", gap: 16,
             padding: 22, borderRadius: "var(--radius)", border: "1px solid var(--line)",
             background: "var(--surface)", boxShadow: "var(--shadow)",
           }}>
