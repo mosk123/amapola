@@ -299,3 +299,24 @@ export function availableSizes(p: Product, color?: ColorKey | null): string[] {
   const list = p.stock[color] ?? p.stock.default ?? [];
   return p.sizes.filter((s) => list.includes(s));
 }
+
+/**
+ * Valida en el servidor que una línea del carrito se pueda comprar: producto visible,
+ * color existente y no agotado, talle con stock (o las piezas del conjunto), 1 unidad.
+ * Devuelve el producto o un mensaje de error.
+ */
+export function validateCartLine(item: { id: string; color: string; size: string; qty: number }):
+  { product: Product } | { error: string } {
+  const product = getProductById(item.id);
+  if (!product || product.hidden) return { error: `Producto inválido: ${item.id}` };
+  const color = item.color as ColorKey;
+  if (!product.colors.includes(color)) return { error: `Color inválido para ${product.name}` };
+  if (product.soldOut?.includes(color)) return { error: `${product.name} (${COLORS[color]?.label}) está agotado` };
+  if (Math.floor(item.qty) !== 1) return { error: `${product.name}: cada prenda es única, se puede comprar 1` };
+  const pieces = product.pieces?.[color];
+  const okSize = pieces
+    ? item.size === pieces.map((pc) => `${pc.name} ${pc.size}`).join(" · ")
+    : availableSizes(product, color).includes(item.size);
+  if (!okSize) return { error: `${product.name}: el talle ${item.size} no está disponible` };
+  return { product };
+}

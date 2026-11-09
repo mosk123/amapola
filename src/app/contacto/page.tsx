@@ -3,22 +3,43 @@
 import { useState } from "react";
 import Eyebrow from "@/components/Eyebrow";
 import Icon from "@/components/Icon";
+import { SOCIAL } from "@/lib/store-config";
 
+// Cada tarjeta abre su canal (href)
 const CANALES = [
-  { icon: "chat" as const, label: "WhatsApp", value: "+54 9 2324-314833", note: "Lun–Vie 10–18 h" },
-  { icon: "mail" as const, label: "Email", value: "amapola.knitwear@gmail.com", note: "Respondemos en 24 h" },
-  { icon: "instagram" as const, label: "Instagram", value: "@amapola.knit", note: "DM siempre abierto" },
-  { icon: "facebook" as const, label: "Facebook", value: "amapola.knitwear", note: "Seguinos y escribinos" },
+  { icon: "chat" as const, label: "WhatsApp", value: "+54 9 2324-314833", note: "Lun–Vie 10–18 h", href: "https://wa.me/5492324314833" },
+  { icon: "mail" as const, label: "Email", value: "amapola.knitwear@gmail.com", note: "Respondemos en 24 h", href: "mailto:amapola.knitwear@gmail.com" },
+  { icon: "instagram" as const, label: "Instagram", value: SOCIAL.instagram.handle, note: "DM siempre abierto", href: SOCIAL.instagram.url },
+  { icon: "facebook" as const, label: "Facebook", value: SOCIAL.facebook.handle, note: "Seguinos y escribinos", href: SOCIAL.facebook.url },
   // { icon: "pin" as const, label: "El taller", value: "Buenos Aires, Argentina", note: "Solo con turno previo" },
 ];
 
 export default function ContactPage() {
   const [sent, setSent] = useState(false);
   const [form, setForm] = useState({ nombre: "", email: "", mensaje: "" });
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
+  // Manda la consulta a /api/contacto, que la reenvía por mail (Resend)
+  const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSent(true);
+    const empresa = (new FormData(e.currentTarget).get("empresa") as string) ?? ""; // trampa para bots
+    setSending(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/contacto", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...form, empresa }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "No pudimos enviar el mensaje.");
+      setSent(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "No pudimos enviar el mensaje.");
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -110,17 +131,28 @@ export default function ContactPage() {
                         />
                       </FormField>
 
+                      {/* Campo trampa: invisible para personas, los bots lo llenan */}
+                      <input name="empresa" tabIndex={-1} autoComplete="off" aria-hidden="true"
+                        style={{ position: "absolute", left: -9999, width: 1, height: 1, opacity: 0 }} />
+
+                      {error && (
+                        <p role="alert" style={{ margin: 0, padding: "10px 14px", borderRadius: "var(--radius-sm)", background: "color-mix(in srgb, var(--accent) 12%, white)", font: "500 13px/1.4 var(--ui-font)", color: "var(--ink)" }}>
+                          {error}
+                        </p>
+                      )}
+
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap", paddingTop: 4 }}>
                         <button
                           type="submit"
+                          disabled={sending}
                           style={{
                             padding: "14px 32px", borderRadius: "var(--btn-radius)",
                             background: "var(--accent)", color: "var(--accent-ink)",
-                            font: "700 14px/1 var(--ui-font)", border: "none", cursor: "pointer",
-                            letterSpacing: ".02em",
+                            font: "700 14px/1 var(--ui-font)", border: "none", cursor: sending ? "wait" : "pointer",
+                            letterSpacing: ".02em", opacity: sending ? 0.7 : 1,
                           }}
                         >
-                          Enviar mensaje
+                          {sending ? "Enviando…" : "Enviar mensaje"}
                         </button>
                         <span style={{ font: "400 12px/1.4 var(--ui-font)", color: "var(--muted)" }}>
                           * Campos obligatorios
@@ -137,10 +169,10 @@ export default function ContactPage() {
               <p style={{ margin: "0 0 8px", font: "700 11px/1 var(--ui-font)", letterSpacing: ".14em", textTransform: "uppercase", color: "var(--muted)" }}>
                 También podés escribirnos por
               </p>
-              {CANALES.map(({ icon, label, value, note }) => (
-                <div key={label} style={{
+              {CANALES.map(({ icon, label, value, note, href }) => (
+                <a key={label} href={href} target={href.startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer" style={{
                   background: "var(--surface)", borderRadius: "var(--radius)",
-                  border: "1px solid var(--line)",
+                  border: "1px solid var(--line)", textDecoration: "none",
                   padding: "18px 20px", display: "flex", gap: 14, alignItems: "center",
                   boxShadow: "var(--shadow)",
                 }}>
@@ -158,7 +190,7 @@ export default function ContactPage() {
                     <p style={{ margin: "0 0 3px", font: "600 14px/1.3 var(--ui-font)", color: "var(--ink)" }}>{value}</p>
                     <p style={{ margin: 0, font: "400 12px/1.3 var(--ui-font)", color: "var(--muted)" }}>{note}</p>
                   </div>
-                </div>
+                </a>
               ))}
             </div>
 

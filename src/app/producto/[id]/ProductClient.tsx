@@ -25,10 +25,9 @@ export default function ProductClient({ product: p, initialColor }: Props) {
   const [color, setColor] = useState<ColorKey | null>(initialColor ?? (p.cover ? null : p.colors[0]));
   const [photo, setPhoto] = useState(0);
   const [size, setSize] = useState<string | undefined>(undefined);
-  const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const [guideOpen, setGuideOpen] = useState(false);
-  const { addToCart } = useCart();
+  const { addToCart, items } = useCart();
 
   // Talles con stock para el color elegido; si el talle elegido no está, pasa al primero que haya
   const avail = availableSizes(p, color);
@@ -39,6 +38,8 @@ export default function ProductClient({ product: p, initialColor }: Props) {
   const isSoldOut = !!color && !!p.soldOut?.includes(color);
   const soldOut = isSoldOut || (!!color && !pieces && avail.length === 0);
   const cartSize = pieces ? pieces.map((pc) => `${pc.name} ${pc.size}`).join(" · ") : currentSize;
+  // Prenda única: si ya está en el carrito no se puede agregar otra
+  const inCart = !!color && items.some((it) => it.id === p.id && it.color === color && it.size === cartSize);
 
   // Guía de talles: resalta el talle elegido (o el de cada pieza en conjuntos)
   const guideHighlight: Record<string, string | undefined> = pieces
@@ -59,7 +60,7 @@ export default function ProductClient({ product: p, initialColor }: Props) {
   };
 
   const handleAdd = () => {
-    if (!color || soldOut || !cartSize) return;
+    if (!color || soldOut || !cartSize || inCart) return;
     addToCart(p, color, cartSize);
     setAdded(true);
     setTimeout(() => setAdded(false), 1800);
@@ -252,28 +253,10 @@ export default function ProductClient({ product: p, initialColor }: Props) {
 
             {/* Cantidad + Agregar */}
             <div className="buy-bar" style={{ display: "flex", gap: 12, alignItems: "center" }}>
-              <div style={{
-                display: "flex", alignItems: "center", flexShrink: 0,
-                border: "1.5px solid var(--line-strong)", borderRadius: "var(--btn-radius)",
-              }}>
-                <button
-                  onClick={() => setQty((q) => Math.max(1, q - 1))}
-                  style={QTY_BTN}
-                >
-                  <Icon name="minus" size={16} />
-                </button>
-                <span style={{ width: 36, textAlign: "center", font: "700 15px/1 var(--ui-font)", color: "var(--ink)" }}>
-                  {qty}
-                </span>
-                <button onClick={() => setQty((q) => q + 1)} style={QTY_BTN}>
-                  <Icon name="plus" size={16} />
-                </button>
-              </div>
-
-              <Btn size="lg" full onClick={handleAdd} disabled={!color || soldOut}>
+              <Btn size="lg" full onClick={handleAdd} disabled={!color || soldOut || (inCart && !added)}>
                 {added
                   ? <><Icon name="check" size={16} /> Agregado</>
-                  : !color ? "Elegí un color" : isSoldOut ? "Agotado" : soldOut ? "Sin stock" : "Agregar al carrito"
+                  : !color ? "Elegí un color" : isSoldOut ? "Agotado" : soldOut ? "Sin stock" : inCart ? "Ya está en tu carrito" : "Agregar al carrito"
                 }
               </Btn>
             </div>
@@ -286,7 +269,7 @@ export default function ProductClient({ product: p, initialColor }: Props) {
             }}>
               {[
                 ["leaf", `Fibra: ${p.fiber}`],
-                ["hand", "Tejido a mano · 2-3 semanas por encargo"],
+                ["hand", "Tejido a mano · Listo para enviar"],
                 ["truck", "Envío gratis desde $60.000"],
               ].map(([icon, text]) => (
                 <div key={text} style={{ display: "flex", gap: 10, alignItems: "center" }}>
@@ -330,10 +313,6 @@ const ARROW_BTN: React.CSSProperties = {
   boxShadow: "0 2px 8px rgba(60,48,40,.15)",
 };
 
-const QTY_BTN: React.CSSProperties = {
-  width: 40, height: 40, display: "grid", placeItems: "center",
-  border: "none", background: "none", color: "var(--ink)", cursor: "pointer",
-};
 
 const LABEL_ROW: React.CSSProperties = {
   display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 12, marginBottom: 10,

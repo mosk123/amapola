@@ -63,19 +63,6 @@ export default function ProductCard({ product: p, variant }: ProductCardProps) {
             {soldOut ? "Agotado" : p.badge}
           </span>
         )}
-        <button
-          className="hide-mobile"
-          onClick={(e) => e.stopPropagation()}
-          aria-label="Guardar"
-          style={{
-            position: "absolute", top: 10, right: 10, width: 34, height: 34, borderRadius: "50%",
-            display: "grid", placeItems: "center", border: "none", cursor: "pointer",
-            background: "color-mix(in srgb, var(--surface) 85%, transparent)", color: "var(--ink-soft)",
-            opacity: hover ? 1 : 0, transition: "opacity .2s ease",
-          }}
-        >
-          <Icon name="heart" size={17} />
-        </button>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>

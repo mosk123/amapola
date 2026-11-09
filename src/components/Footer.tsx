@@ -11,7 +11,6 @@ const TIENDA = [
 
 const AMAPOLA = [
   { label: "Nosotras", href: "/nosotras" },
-  { label: "Las Tejedoras", href: "/nosotras" },
   { label: "Cuidados", href: "/cuidados" },
   { label: "Contacto", href: "/contacto" },
 ];
@@ -52,36 +51,6 @@ export default function Footer() {
               <Link key={label} href={href} style={FOOTER_LINK}>{label}</Link>
             ))}
           </div>
-        </div>
-
-        {/* Newsletter */}
-        <div>
-          <div style={COL_HEADER}>Sumate al club</div>
-          <p style={{ margin: "0 0 12px", font: "400 13px/1.5 var(--ui-font)", opacity: .8 }}>
-            Novedades, encargos y un mimo de bienvenida.
-          </p>
-          <form onSubmit={(e) => e.preventDefault()} style={{ display: "flex", gap: 8 }}>
-            <input
-              placeholder="tu@email.com"
-              type="email"
-              style={{
-                flex: 1, minWidth: 0, padding: "11px 14px", borderRadius: "var(--btn-radius)",
-                border: "1px solid rgba(255,255,255,.25)", background: "rgba(255,255,255,.08)",
-                color: "var(--bg)", font: "400 13px/1 var(--ui-font)", outline: "none",
-              }}
-            />
-            <button
-              type="submit"
-              style={{
-                padding: "11px 18px", borderRadius: "var(--btn-radius)",
-                background: "var(--accent)", color: "var(--accent-ink)",
-                font: "700 13px/1 var(--ui-font)", border: "none", cursor: "pointer",
-                whiteSpace: "nowrap",
-              }}
-            >
-              Unirme
-            </button>
-          </form>
         </div>
       </div>
 

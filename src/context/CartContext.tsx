@@ -30,9 +30,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       const idx = prev.findIndex(
         (it) => it.id === product.id && it.color === color && it.size === size
       );
-      if (idx >= 0) {
-        return prev.map((it, i) => i === idx ? { ...it, qty: it.qty + 1 } : it);
-      }
+      // Cada prenda es única: si ya está en el carrito no se suma otra
+      if (idx >= 0) return prev;
       return [...prev, { ...product, color, size, qty: 1 }];
     });
     setCartOpen(true);
@@ -44,7 +43,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const updateQty = useCallback((index: number, delta: number) => {
     setItems((prev) =>
-      prev.map((it, i) => i === index ? { ...it, qty: Math.max(1, it.qty + delta) } : it)
+      // Máximo 1 por prenda (son únicas)
+      prev.map((it, i) => i === index ? { ...it, qty: Math.min(1, Math.max(1, it.qty + delta)) } : it)
     );
   }, []);
 

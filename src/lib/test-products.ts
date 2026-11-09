@@ -139,11 +139,11 @@ export const TEST_PRODUCTS: Product[] = [
     },
   },
   {
-    // Es el short del Conjunto Diseño arcoíris, vendido solo
+    // Pantalón suelto (no es parte del conjunto arcoíris, que es remera + short)
     id: "prueba-arcoiris", name: "Pantalón Arcoíris", cat: "pantalones", audience: "Colores",
-    price: 20000, colors: ["multicolor"], sizes: TALLES,
-    stock: { multicolor: ["9-12 m"] },
-    measures: [M_SHORT],
+    price: 25000, colors: ["multicolor"], sizes: TALLES,
+    stock: { multicolor: ["6-9 m"] },
+    measures: [M_PANTALON],
     composition: "Hilo de algodón 8/3",
     badge: "Nuevo", fiber: "Algodón",
     short: "Pantalón a rayas de colores.", desc: TEXTO,
@@ -185,6 +185,7 @@ export const TEST_PRODUCTS: Product[] = [
     soldOut: ["verdeclaro"],
     pieces: {
       verdeclaro: [{ name: "Remera", size: "9-12 m" }, { name: "Short", size: "9-12 m" }],
+      bosque:     [{ name: "Remera", size: "9-12 m" }, { name: "Short", size: "9-12 m" }],
     },
     measures: [M_REMERA, M_SHORT],
     composition: "Hilo de algodón 8/3",
@@ -202,7 +203,7 @@ export const TEST_PRODUCTS: Product[] = [
     pieces: {
       arcoiris: [{ name: "Remera", size: "9-12 m" }, { name: "Short", size: "9-12 m" }],
       rojo:     [{ name: "Remera", size: "6-9 m" }, { name: "Short", size: "6-9 m" }],
-      marino:   [{ name: "Remera", size: "18-24 m" }],
+      marino:   [{ name: "Remera", size: "18-24 m" }, { name: "Short", size: "18-24 m" }],
     },
     measures: [M_REMERA, M_SHORT],
     composition: "Hilo de algodón 8/3",

@@ -286,3 +286,46 @@ export async function notifyAdminNewOrder(order: OrderInfo): Promise<void> {
     console.error("[notifications] Error avisando por WhatsApp al vendedor:", err);
   }
 }
+
+export interface ContactMessage {
+  nombre: string;
+  email: string;
+  mensaje: string;
+}
+
+/** Manda al vendedor (ADMIN_EMAIL) la consulta del formulario de Contacto. Responder el mail le contesta al cliente. */
+export async function sendContactMessage(msg: ContactMessage): Promise<boolean> {
+  const apiKey = process.env.RESEND_API_KEY;
+  const adminEmail = process.env.ADMIN_EMAIL;
+  if (!apiKey || !adminEmail) {
+    console.error("[notifications] Falta RESEND_API_KEY o ADMIN_EMAIL — no se pudo enviar la consulta de contacto.");
+    return false;
+  }
+  try {
+    const resend = new Resend(apiKey);
+    const { error } = await resend.emails.send({
+      from: resendFrom(),
+      to: adminEmail,
+      replyTo: msg.email,
+      subject: `Consulta de ${msg.nombre} desde la web`,
+      html: `
+        <div style="font:400 15px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#41284B;max-width:560px;">
+          <div style="background:#41284B;padding:18px 22px;border-radius:12px 12px 0 0;">${logoHeaderHtml()}</div>
+          <div style="border:1px solid #E5DDE6;border-top:none;padding:22px;border-radius:0 0 12px 12px;">
+            <p style="margin:0 0 6px;"><strong>Nombre:</strong> ${escapeHtml(msg.nombre)}</p>
+            <p style="margin:0 0 16px;"><strong>Email:</strong> <a href="mailto:${escapeHtml(msg.email)}" style="color:#41284B;">${escapeHtml(msg.email)}</a></p>
+            <p style="margin:0;white-space:pre-wrap;">${escapeHtml(msg.mensaje)}</p>
+            <p style="margin:20px 0 0;font-size:12px;color:#8A7A8E;">Respondé este mail para contestarle directamente.</p>
+          </div>
+        </div>`,
+    });
+    if (error) {
+      console.error("[notifications] Resend rechazó la consulta de contacto:", error);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error("[notifications] Error enviando la consulta de contacto:", err);
+    return false;
+  }
+}

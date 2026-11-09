@@ -8,3 +8,9 @@ export const TRANSFER_ALIAS = "amapola.tejidos.mp";
 export const ADMIN_WHATSAPP_DISPLAY = "2324479770";
 
 export const TRANSFER_DISCOUNT_RATE = 0.1;
+
+// Redes sociales (corazón del menú y tarjetas de Contacto)
+export const SOCIAL = {
+  instagram: { label: "Instagram", handle: "@amapola.knit", url: "https://www.instagram.com/amapola.knit/" },
+  facebook: { label: "Facebook", handle: "amapola.knitwear", url: "https://www.facebook.com/amapola.knitwear" },
+};

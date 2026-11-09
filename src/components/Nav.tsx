@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import Icon from "./Icon";
 import { useCart } from "@/context/CartContext";
+import { SOCIAL } from "@/lib/store-config";
+import SearchPanel from "./SearchPanel";
 
 const LINKS = [
   { href: "/", label: "Inicio" },
@@ -19,19 +21,37 @@ export default function Nav() {
   const pathname = usePathname();
   const { cartCount, openCart } = useCart();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [likeOpen, setLikeOpen] = useState(false);
+  const likeRef = useRef<HTMLDivElement>(null);
 
   // Cerrar el menú al cambiar de página
   const [lastPath, setLastPath] = useState(pathname);
   if (pathname !== lastPath) {
     setLastPath(pathname);
     setMenuOpen(false);
+    setSearchOpen(false);
+    setLikeOpen(false);
   }
 
   // Con el menú abierto no se scrollea la página de atrás
   useEffect(() => {
-    document.body.style.overflow = menuOpen ? "hidden" : "";
+    document.body.style.overflow = menuOpen || searchOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
-  }, [menuOpen]);
+  }, [menuOpen, searchOpen]);
+
+  // El menú del corazón se cierra al tocar afuera o con Escape
+  useEffect(() => {
+    if (!likeOpen) return;
+    const onClick = (e: MouseEvent) => { if (!likeRef.current?.contains(e.target as Node)) setLikeOpen(false); };
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setLikeOpen(false); };
+    document.addEventListener("mousedown", onClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [likeOpen]);
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
@@ -83,10 +103,60 @@ export default function Nav() {
           })}
         </nav>
 
-        {/* Iconos derecha — buscar y favoritos todavía no hacen nada: en mobile no se muestran */}
+        {/* Iconos derecha: buscar, me gusta en redes, carrito */}
         <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 2 }}>
-          <button className="hide-mobile" style={ICON_BTN} aria-label="Buscar"><Icon name="search" /></button>
-          <button className="hide-mobile" style={ICON_BTN} aria-label="Favoritos"><Icon name="heart" /></button>
+          <button
+            onClick={() => { setSearchOpen((o) => !o); setMenuOpen(false); setLikeOpen(false); }}
+            style={ICON_BTN}
+            aria-label="Buscar"
+            aria-expanded={searchOpen}
+          >
+            <Icon name="search" />
+          </button>
+          <div ref={likeRef} style={{ position: "relative" }}>
+            <button
+              onClick={() => setLikeOpen((o) => !o)}
+              style={ICON_BTN}
+              aria-label="Seguinos en redes"
+              aria-expanded={likeOpen}
+              aria-haspopup="true"
+            >
+              <Icon name="heart" />
+            </button>
+            {likeOpen && (
+              <div role="menu" style={{
+                position: "absolute", top: "calc(100% + 10px)", right: 0, width: 230, zIndex: 50,
+                background: "var(--surface)", borderRadius: "var(--radius-sm)",
+                boxShadow: "var(--shadow-hover)", border: "1px solid var(--line)", padding: 8,
+              }}>
+                <p style={{ margin: "6px 10px 8px", font: "600 13px/1.3 var(--ui-font)", color: "var(--ink)" }}>
+                  ¿Te gusta lo que hacemos? Seguinos
+                </p>
+                {[
+                  { ...SOCIAL.instagram, icon: "instagram" as const },
+                  { ...SOCIAL.facebook, icon: "facebook" as const },
+                ].map((r) => (
+                  <a
+                    key={r.label}
+                    role="menuitem"
+                    href={r.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setLikeOpen(false)}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 10, padding: "10px",
+                      borderRadius: 8, textDecoration: "none", color: "var(--ink)",
+                      font: "600 14px/1 var(--ui-font)",
+                    }}
+                  >
+                    <span style={{ color: "var(--accent)", display: "grid" }}><Icon name={r.icon} size={18} /></span>
+                    {r.label}
+                    <span style={{ marginLeft: "auto", font: "400 12px/1 var(--ui-font)", color: "var(--muted)" }}>{r.handle}</span>
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
           <button
             onClick={openCart}
             style={{ ...ICON_BTN, position: "relative" }}
@@ -105,7 +175,7 @@ export default function Nav() {
           </button>
           <button
             className="nav-burger"
-            onClick={() => setMenuOpen((o) => !o)}
+            onClick={() => { setMenuOpen((o) => !o); setSearchOpen(false); setLikeOpen(false); }}
             style={ICON_BTN}
             aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
             aria-expanded={menuOpen}
@@ -114,6 +184,8 @@ export default function Nav() {
           </button>
         </div>
       </div>
+
+      {searchOpen && <SearchPanel onClose={() => setSearchOpen(false)} />}
 
       {/* Menú desplegable (mobile / tablet) */}
       <div

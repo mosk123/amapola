@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { CATEGORIES, CATALOG_PRODUCTS } from "@/lib/data";
+import { CATEGORIES, CATALOG_PRODUCTS, getProductById } from "@/lib/data";
+import type { ColorKey, Product } from "@/types";
 import Eyebrow from "@/components/Eyebrow";
 import Photo from "@/components/Photo";
 import ProductCard from "@/components/ProductCard";
@@ -10,7 +11,7 @@ import Icon from "@/components/Icon";
 const STATS = [
   { n: "100%", l: "fibras naturales" },
   { n: String(CATALOG_PRODUCTS.length), l: "modelos tejidos" },
-  { n: "2-3", l: "sem · por encargo" },
+  { n: "Listo", l: "para enviar" },
 ];
 
 const CAT_TONES = ["caramel", "sage", "rosa", "blush"] as const;
@@ -30,9 +31,18 @@ const CAT_IMAGES: Record<string, string> = {
   bodys:      "/images/products-web/prueba-body/body-1.jpg",
 };
 
+// "Prendas destacadas" del inicio: producto + color (variant) que se muestra en la card
+const FEATURED: { id: string; variant?: ColorKey }[] = [
+  { id: "prueba-conjunto-diseno", variant: "rojo" },
+  { id: "prueba-remera-violeta" },
+  { id: "prueba-enterito", variant: "crudo" },
+];
+
 export default function Home() {
-  const badged = CATALOG_PRODUCTS.filter((p) => p.badge);
-  const featured = (badged.length > 0 ? badged : CATALOG_PRODUCTS).slice(0, 4);
+  const featured = FEATURED.flatMap(({ id, variant }) => {
+    const product = getProductById(id);
+    return product && !product.hidden ? [{ product, variant }] : [];
+  }) satisfies { product: Product; variant?: ColorKey }[];
 
   return (
     <div>
@@ -146,8 +156,8 @@ export default function Home() {
             </h2>
           </div>
           <div className="grid-cards">
-            {featured.map((p) => (
-              <ProductCard key={p.id} product={p} />
+            {featured.map(({ product, variant }) => (
+              <ProductCard key={`${product.id}-${variant ?? ""}`} product={product} variant={variant} />
             ))}
           </div>
         </div>

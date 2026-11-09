@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getProductById } from "@/lib/data";
+import { getProductById, validateCartLine } from "@/lib/data";
 import { calculateShipping } from "@/lib/shipping";
 import { sendBuyerOrderEmail, notifyAdminNewOrder, type OrderInfo } from "@/lib/notifications";
 import { TRANSFER_DISCOUNT_RATE } from "@/lib/store-config";
@@ -51,12 +51,19 @@ export async function POST(request: NextRequest) {
   // Mismo criterio que /api/checkout: nunca confiamos en precios del cliente,
   // reconstruimos cada línea desde el catálogo real.
   const lines: { title: string; description: string; quantity: number; unit_price: number }[] = [];
+  // La misma prenda no puede venir dos veces
+  const seen = new Set(items.map((it: { id: string; color: string; size: string }) => `${it.id}|${it.color}|${it.size}`));
+  if (seen.size !== items.length) {
+    return NextResponse.json({ error: "Hay prendas repetidas en el carrito." }, { status: 400 });
+  }
   for (const item of items) {
-    const product = getProductById(item.id);
-    const qty = Math.floor(item.qty);
-    if (!product || !Number.isFinite(qty) || qty < 1) {
-      return NextResponse.json({ error: `Producto inválido: ${item.id}` }, { status: 400 });
+    // Producto visible, color no agotado, talle con stock y 1 unidad (prendas únicas)
+    const check = validateCartLine(item);
+    if ("error" in check) {
+      return NextResponse.json({ error: check.error }, { status: 400 });
     }
+    const { product } = check;
+    const qty = 1;
     lines.push({
       title: product.name,
       description: `${item.color} · talle ${item.size}`,

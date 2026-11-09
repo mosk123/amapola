@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { MercadoPagoConfig, Preference } from "mercadopago";
-import { getProductById } from "@/lib/data";
+import { getProductById, validateCartLine } from "@/lib/data";
 import { calculateShipping } from "@/lib/shipping";
 import type { ColorKey } from "@/types";
 
@@ -65,12 +65,19 @@ export async function POST(request: NextRequest) {
   // Nunca confiamos en precios/cantidades que manda el cliente: reconstruimos
   // cada línea a partir del catálogo real para que el total que se cobra sea el correcto.
   const lines: { id: string; title: string; description: string; quantity: number; unit_price: number }[] = [];
+  // La misma prenda no puede venir dos veces
+  const seen = new Set(items.map((it: { id: string; color: string; size: string }) => `${it.id}|${it.color}|${it.size}`));
+  if (seen.size !== items.length) {
+    return NextResponse.json({ error: "Hay prendas repetidas en el carrito." }, { status: 400 });
+  }
   for (const item of items) {
-    const product = getProductById(item.id);
-    const qty = Math.floor(item.qty);
-    if (!product || !Number.isFinite(qty) || qty < 1) {
-      return NextResponse.json({ error: `Producto inválido: ${item.id}` }, { status: 400 });
+    // Producto visible, color no agotado, talle con stock y 1 unidad (prendas únicas)
+    const check = validateCartLine(item);
+    if ("error" in check) {
+      return NextResponse.json({ error: check.error }, { status: 400 });
     }
+    const { product } = check;
+    const qty = 1;
     lines.push({
       id: product.id,
       title: product.name,

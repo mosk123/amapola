@@ -10,7 +10,7 @@ import Icon from "./Icon";
 const FREE_SHIPPING = 60000;
 
 export default function CartDrawer() {
-  const { items, cartOpen, closeCart, removeFromCart, updateQty, subtotal } = useCart();
+  const { items, cartOpen, closeCart, removeFromCart, subtotal } = useCart();
   const router = useRouter();
 
   const goToCatalog = () => { closeCart(); router.push("/catalogo"); };
@@ -83,11 +83,8 @@ export default function CartDrawer() {
                       {COLORS[it.color]?.label} · talle {it.size}
                     </span>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 4 }}>
-                      <div style={{ display: "flex", alignItems: "center", border: "1px solid var(--line-strong)", borderRadius: "var(--btn-radius)" }}>
-                        <button onClick={() => updateQty(idx, -1)} style={MINI_QTY}><Icon name="minus" size={13} /></button>
-                        <span style={{ width: 28, textAlign: "center", font: "700 13px/1 var(--ui-font)", color: "var(--ink)" }}>{it.qty}</span>
-                        <button onClick={() => updateQty(idx, 1)} style={MINI_QTY}><Icon name="plus" size={13} /></button>
-                      </div>
+                      {/* Prendas únicas: sin selector de cantidad */}
+                      <span style={{ font: "500 12px/1 var(--ui-font)", color: "var(--muted)" }}>Prenda única</span>
                       <span style={{ font: "700 14px/1 var(--ui-font)", color: "var(--ink)" }}>
                         {fmt(it.price * it.qty)}
                       </span>
@@ -148,7 +145,3 @@ const ICON_BTN: React.CSSProperties = {
   border: "none", background: "none", cursor: "pointer", color: "var(--ink)",
 };
 
-const MINI_QTY: React.CSSProperties = {
-  width: 28, height: 30, display: "grid", placeItems: "center",
-  border: "none", background: "none", color: "var(--ink)", cursor: "pointer",
-};
