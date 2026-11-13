@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Nunito_Sans, IBM_Plex_Mono, Caveat } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
@@ -9,25 +8,30 @@ import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
 
-const nunito = Nunito_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  style: ["normal", "italic"],
+// Fuentes incluidas en el proyecto (paquetes @fontsource), sin bajarlas de Google al compilar:
+// el servidor de build de Hostinger no llega a fonts.googleapis.com.
+const nunito = localFont({
+  src: [
+    { path: "../../node_modules/@fontsource-variable/nunito-sans/files/nunito-sans-latin-wght-normal.woff2", weight: "200 1000", style: "normal" },
+    { path: "../../node_modules/@fontsource-variable/nunito-sans/files/nunito-sans-latin-wght-italic.woff2", weight: "200 1000", style: "italic" },
+  ],
   variable: "--font-nunito",
   display: "swap",
 });
 
-const ibmMono = IBM_Plex_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500"],
+const ibmMono = localFont({
+  src: [
+    { path: "../../node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-normal.woff2", weight: "400", style: "normal" },
+    { path: "../../node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-500-normal.woff2", weight: "500", style: "normal" },
+  ],
   variable: "--font-mono",
   display: "swap",
 });
 
 // Fallback manuscrito si "Dreaming Outloud Sans" no carga.
-const caveat = Caveat({
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
+const caveat = localFont({
+  src: "../../node_modules/@fontsource-variable/caveat/files/caveat-latin-wght-normal.woff2",
+  weight: "400 700",
   variable: "--font-caveat",
   display: "swap",
 });
