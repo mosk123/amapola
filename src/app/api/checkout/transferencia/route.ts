@@ -2,7 +2,7 @@ import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 import { validateCartLine, priceOf } from "@/lib/data";
 import { getFreshCatalog, variantKey, markSold, releaseSold } from "@/lib/catalog";
-import { isShippingMethod, shippingFor, type ShippingMethod } from "@/lib/shipping";
+import { isShippingMethod, isShippingAvailable, shippingFor, type ShippingMethod } from "@/lib/shipping";
 import { sendBuyerOrderEmail, notifyAdminNewOrder, type OrderInfo } from "@/lib/notifications";
 import { TRANSFER_DISCOUNT_RATE } from "@/lib/store-config";
 import { parseOrderInput, checkOrderRate } from "@/lib/checkout-guard";
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
   const parsed = parseOrderInput(body);
   if ("error" in parsed) return parsed.error;
   const { items, contact, shippingMethod } = parsed;
-  if (!isShippingMethod(shippingMethod)) {
+  if (!isShippingMethod(shippingMethod) || !isShippingAvailable(shippingMethod, contact.postalCode)) {
     return NextResponse.json({ error: "Elegí cómo querés recibir el pedido." }, { status: 400 });
   }
 

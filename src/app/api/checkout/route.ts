@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { MercadoPagoConfig, Preference } from "mercadopago";
 import { validateCartLine, priceOf } from "@/lib/data";
 import { getFreshCatalog, variantKey } from "@/lib/catalog";
-import { isShippingMethod, shippingFor } from "@/lib/shipping";
+import { isShippingMethod, isShippingAvailable, shippingFor } from "@/lib/shipping";
 import { parseOrderInput, checkOrderRate } from "@/lib/checkout-guard";
 import type { ColorKey } from "@/types";
 
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
   const parsed = parseOrderInput(body);
   if ("error" in parsed) return parsed.error;
   const { items, contact, shippingMethod } = parsed;
-  if (!isShippingMethod(shippingMethod)) {
+  if (!isShippingMethod(shippingMethod) || !isShippingAvailable(shippingMethod, contact.postalCode)) {
     return NextResponse.json({ error: "Elegí cómo querés recibir el pedido." }, { status: 400 });
   }
 

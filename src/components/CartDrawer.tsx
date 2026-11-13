@@ -128,7 +128,7 @@ export default function CartDrawer() {
                 <span style={{ font: "700 18px/1 var(--ui-font)", color: "var(--ink)" }}>{fmt(subtotal)}</span>
               </div>
               <p style={{ margin: "0 0 14px", font: "500 11px/1.4 'IBM Plex Mono', monospace", color: "var(--muted)" }}>
-                Envío a todo el país: sucursal del Correo $8.000 o domicilio $11.500
+                Envío a todo el país: sucursal del Correo $8.000 o domicilio $11.500 · En Mercedes (CP 6600), a domicilio gratis
               </p>
               <Btn full size="lg" onClick={goToCheckout}>Finalizar compra</Btn>
             </div>

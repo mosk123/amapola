@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
-import { SHIPPING_OPTIONS, shippingFor, type ShippingMethod } from "@/lib/shipping";
+import { SHIPPING_OPTIONS, availableShippingMethods, shippingFor, type ShippingMethod } from "@/lib/shipping";
 import { COLORS, fmt } from "@/lib/data";
 import { TRANSFER_DISCOUNT_RATE } from "@/lib/store-config";
 import Eyebrow from "@/components/Eyebrow";
@@ -41,7 +41,7 @@ export default function CheckoutClient() {
   const [step, setStep] = useState<Step>("checkout");
   const [form, setForm] = useState<CheckoutForm>(EMPTY_FORM);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
-  const [shippingMethod, setShippingMethod] = useState<ShippingMethod | null>(null);
+  const [chosenShipping, setShippingMethod] = useState<ShippingMethod | null>(null);
   const [submitNote, setSubmitNote] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -49,6 +49,10 @@ export default function CheckoutClient() {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
+  // Las opciones dependen del código postal (Mercedes tiene envío gratis): si la elegida
+  // deja de estar disponible al cambiar el CP, se vuelve a pedir que elija.
+  const shippingChoices = availableShippingMethods(form.postalCode);
+  const shippingMethod = chosenShipping && shippingChoices.includes(chosenShipping) ? chosenShipping : null;
   const shipping = shippingMethod ? shippingFor(shippingMethod) : null;
 
   const requiredFieldsFilled = Object.values(form).every((v) => v.trim().length > 0);
@@ -173,7 +177,7 @@ export default function CheckoutClient() {
             <div style={{ borderTop: "1px solid var(--line)", paddingTop: 14, display: "flex", flexDirection: "column", gap: 8 }}>
               <Row label="Subtotal" value={fmt(subtotal)} />
               <Row label="Descuento transferencia (10%)" value={`-${fmt(discount)}`} />
-              <Row label={shipping?.label ?? "Envío"} value={fmt(shipping?.cost ?? 0)} />
+              <Row label={shipping?.label ?? "Envío"} value={shipping?.cost === 0 ? "Gratis" : fmt(shipping?.cost ?? 0)} />
               <Row label="Total" value={fmt(total)} big />
             </div>
 
@@ -226,7 +230,7 @@ export default function CheckoutClient() {
             <section>
               <h2 style={SECTION_TITLE}><Icon name="box" size={16} /> Envío</h2>
               <div className="form-2">
-                {(Object.keys(SHIPPING_OPTIONS) as ShippingMethod[]).map((id) => {
+                {shippingChoices.map((id) => {
                   const opt = SHIPPING_OPTIONS[id];
                   const selected = shippingMethod === id;
                   return (
@@ -245,7 +249,7 @@ export default function CheckoutClient() {
                     >
                       <span style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
                         <span style={{ font: "700 14px/1.2 var(--ui-font)", color: "var(--ink)" }}>{opt.label}</span>
-                        <span style={{ font: "700 14px/1.2 var(--ui-font)", color: "var(--ink)", whiteSpace: "nowrap" }}>{fmt(opt.cost)}</span>
+                        <span style={{ font: "700 14px/1.2 var(--ui-font)", color: "var(--ink)", whiteSpace: "nowrap" }}>{opt.cost === 0 ? "Gratis" : fmt(opt.cost)}</span>
                       </span>
                       <span style={{ font: "400 12px/1.4 var(--ui-font)", color: "var(--ink-soft)" }}>{opt.description}</span>
                     </button>
@@ -332,7 +336,7 @@ export default function CheckoutClient() {
               )}
               <Row
                 label={shipping?.label ?? "Envío"}
-                value={shipping ? fmt(shipping.cost) : "Elegí el envío"}
+                value={shipping ? (shipping.cost === 0 ? "Gratis" : fmt(shipping.cost)) : "Elegí el envío"}
                 muted={!shipping}
               />
               <Row label="Total" value={fmt(total)} big />
