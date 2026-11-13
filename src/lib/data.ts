@@ -19,7 +19,7 @@ export const COLORS: Record<ColorKey, ColorInfo> = {
   salvia:    { label: "Salvia",    hex: "#A9B79A" },
   terracota: { label: "Terracota", hex: "#CE8C66" },
   trigo:     { label: "Trigo",     hex: "#D8B98A" },
-  rosa:      { label: "Rosa té",   hex: "#E3C4BB" },
+  rosa:      { label: "Rosa bebé", hex: "#E3C4BB" },
   crudo:     { label: "Crudo",     hex: "#EDE6DA" },
   musgo:     { label: "Musgo",     hex: "#7E8E69" },
   azul:      { label: "Azul",      hex: "#2F3B66" },
