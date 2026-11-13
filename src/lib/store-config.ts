@@ -3,9 +3,8 @@
 // TODO: alias real cuando lo tengamos — por ahora inventado a pedido, para poder probar el flujo.
 export const TRANSFER_ALIAS = "amapola.tejidos.mp";
 
-// Mismo número que TWILIO_WHATSAPP_TO — se muestra en el mail del comprador como
-// referencia humana además de usarse para la notificación por WhatsApp al vendedor.
-export const ADMIN_WHATSAPP_DISPLAY = "2324479770";
+// WhatsApp de Amapola tal como se muestra en el mail de transferencia (mismo que WHATSAPP_NUMBER).
+export const ADMIN_WHATSAPP_DISPLAY = "2324-314833";
 
 export const TRANSFER_DISCOUNT_RATE = 0.1;
 
