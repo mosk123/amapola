@@ -5,8 +5,6 @@
  * se reinicia, los contadores arrancan de cero, lo cual es aceptable para frenar
  * abuso automatizado. Si algún día hay varias instancias, mover a una base compartida.
  */
-import type { NextRequest } from "next/server";
-
 const buckets = new Map<string, number[]>();
 const MAX_KEYS = 10_000; // tope de memoria: si se llena, se descartan las claves más viejas
 
@@ -35,7 +33,7 @@ export function rateLimit(key: string, limit: number, windowMs: number): { ok: b
  * IP del cliente detrás del proxy de Hostinger. Se toma el ÚLTIMO valor de
  * x-forwarded-for (lo agrega el proxy); el primero lo puede inventar el cliente.
  */
-export function clientIp(request: NextRequest): string {
+export function clientIp(request: { headers: Headers }): string {
   const real = request.headers.get("x-real-ip")?.trim();
   if (real) return real;
   const fwd = request.headers.get("x-forwarded-for");
