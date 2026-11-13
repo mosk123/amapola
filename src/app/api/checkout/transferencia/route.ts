@@ -2,7 +2,7 @@ import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 import { validateCartLine, priceOf } from "@/lib/data";
 import { getFreshCatalog, variantKey, markSold, releaseSold } from "@/lib/catalog";
-import { calculateShipping } from "@/lib/shipping";
+import { isShippingMethod, shippingFor, type ShippingMethod } from "@/lib/shipping";
 import { sendBuyerOrderEmail, notifyAdminNewOrder, type OrderInfo } from "@/lib/notifications";
 import { TRANSFER_DISCOUNT_RATE } from "@/lib/store-config";
 import type { ColorKey } from "@/types";
@@ -27,6 +27,7 @@ interface CheckoutContact {
 interface TransferenciaRequestBody {
   items: CheckoutItemInput[];
   contact: CheckoutContact;
+  shippingMethod: ShippingMethod;
 }
 
 const REQUIRED_CONTACT_FIELDS: (keyof CheckoutContact)[] = [
@@ -41,13 +42,16 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Body inválido." }, { status: 400 });
   }
 
-  const { items, contact } = body;
+  const { items, contact, shippingMethod } = body;
 
   if (!Array.isArray(items) || items.length === 0) {
     return NextResponse.json({ error: "El carrito está vacío." }, { status: 400 });
   }
   if (!contact || REQUIRED_CONTACT_FIELDS.some((f) => !contact[f]?.trim())) {
     return NextResponse.json({ error: "Faltan datos de contacto o dirección." }, { status: 400 });
+  }
+  if (!isShippingMethod(shippingMethod)) {
+    return NextResponse.json({ error: "Elegí cómo querés recibir el pedido." }, { status: 400 });
   }
 
   // Mismo criterio que /api/checkout: nunca confiamos en precios del cliente,
@@ -87,7 +91,7 @@ export async function POST(request: NextRequest) {
 
   const subtotal = lines.reduce((sum, l) => sum + l.unit_price * l.quantity, 0);
   const discount = Math.round(subtotal * TRANSFER_DISCOUNT_RATE);
-  const shipping = await calculateShipping(contact.postalCode, subtotal - discount);
+  const shipping = shippingFor(shippingMethod);
   const total = subtotal - discount + shipping.cost;
 
   // TODO: cuando exista persistencia de órdenes, crear acá el registro

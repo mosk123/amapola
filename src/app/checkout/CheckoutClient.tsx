@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
-import { calculateShipping } from "@/lib/shipping";
+import { SHIPPING_OPTIONS, shippingFor, type ShippingMethod } from "@/lib/shipping";
 import { COLORS, fmt } from "@/lib/data";
 import { TRANSFER_DISCOUNT_RATE } from "@/lib/store-config";
 import Eyebrow from "@/components/Eyebrow";
@@ -26,7 +26,6 @@ const EMPTY_FORM: CheckoutForm = {
   street: "", city: "", province: "", postalCode: "",
 };
 
-type Shipping = { cost: number; label: string };
 type PaymentMethod = "mercadopago" | "transferencia";
 type Step = "checkout" | "confirmar-transferencia";
 
@@ -42,38 +41,15 @@ export default function CheckoutClient() {
   const [step, setStep] = useState<Step>("checkout");
   const [form, setForm] = useState<CheckoutForm>(EMPTY_FORM);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
-  const [shipping, setShipping] = useState<Shipping | null>(null);
-  const [calculating, setCalculating] = useState(false);
-  const [calcError, setCalcError] = useState<string | null>(null);
+  const [shippingMethod, setShippingMethod] = useState<ShippingMethod | null>(null);
   const [submitNote, setSubmitNote] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   const updateField = (field: keyof CheckoutForm, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
-    // Si ya se había calculado el envío y cambia el CP, invalidamos ese cálculo:
-    // no puede quedar un total en pantalla que ya no corresponde a ese código postal.
-    if (field === "postalCode" && shipping) {
-      setShipping(null);
-      setCalcError(null);
-    }
   };
 
-  const handleCalculateShipping = async () => {
-    if (!form.postalCode.trim()) {
-      setCalcError("Ingresá un código postal.");
-      return;
-    }
-    setCalculating(true);
-    setCalcError(null);
-    try {
-      const result = await calculateShipping(form.postalCode, subtotal);
-      setShipping(result);
-    } catch {
-      setCalcError("No pudimos calcular el envío. Probá de nuevo.");
-    } finally {
-      setCalculating(false);
-    }
-  };
+  const shipping = shippingMethod ? shippingFor(shippingMethod) : null;
 
   const requiredFieldsFilled = Object.values(form).every((v) => v.trim().length > 0);
   const canContinue = requiredFieldsFilled && shipping !== null && paymentMethod !== null;
@@ -90,6 +66,7 @@ export default function CheckoutClient() {
         body: JSON.stringify({
           items: items.map((it) => ({ id: it.id, color: it.color, size: it.size, qty: it.qty })),
           contact: form,
+          shippingMethod,
         }),
       });
       const data = await res.json();
@@ -113,6 +90,7 @@ export default function CheckoutClient() {
         body: JSON.stringify({
           items: items.map((it) => ({ id: it.id, color: it.color, size: it.size, qty: it.qty })),
           contact: form,
+          shippingMethod,
         }),
       });
       const data = await res.json();
@@ -195,7 +173,7 @@ export default function CheckoutClient() {
             <div style={{ borderTop: "1px solid var(--line)", paddingTop: 14, display: "flex", flexDirection: "column", gap: 8 }}>
               <Row label="Subtotal" value={fmt(subtotal)} />
               <Row label="Descuento transferencia (10%)" value={`-${fmt(discount)}`} />
-              <Row label={`Envío${shipping ? ` · ${shipping.label}` : ""}`} value={shipping && shipping.cost === 0 ? "Gratis" : fmt(shipping?.cost ?? 0)} />
+              <Row label={shipping?.label ?? "Envío"} value={fmt(shipping?.cost ?? 0)} />
               <Row label="Total" value={fmt(total)} big />
             </div>
 
@@ -241,29 +219,38 @@ export default function CheckoutClient() {
                 <Field label="Calle y número" value={form.street} onChange={(v) => updateField("street", v)} full />
                 <Field label="Ciudad" value={form.city} onChange={(v) => updateField("city", v)} />
                 <Field label="Provincia" value={form.province} onChange={(v) => updateField("province", v)} />
-                <div>
-                  <label style={LABEL}>Código postal</label>
-                  <div style={{ display: "flex", gap: 8 }}>
-                    <input
-                      style={{ ...INPUT, flex: 1 }}
-                      value={form.postalCode}
-                      onChange={(e) => updateField("postalCode", e.target.value)}
-                      placeholder="Ej: C1425 o 5000"
-                    />
-                    <Btn
-                      variant="outline"
-                      onClick={handleCalculateShipping}
-                      disabled={calculating}
+                <Field label="Código postal" value={form.postalCode} onChange={(v) => updateField("postalCode", v)} />
+              </div>
+            </section>
+
+            <section>
+              <h2 style={SECTION_TITLE}><Icon name="box" size={16} /> Envío</h2>
+              <div className="form-2">
+                {(Object.keys(SHIPPING_OPTIONS) as ShippingMethod[]).map((id) => {
+                  const opt = SHIPPING_OPTIONS[id];
+                  const selected = shippingMethod === id;
+                  return (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() => setShippingMethod(id)}
+                      style={{
+                        textAlign: "left", cursor: "pointer",
+                        padding: 16, borderRadius: "var(--radius)",
+                        border: `1.5px solid ${selected ? "var(--accent)" : "var(--line-strong)"}`,
+                        background: selected ? "var(--bg-2)" : "var(--surface)",
+                        display: "flex", flexDirection: "column", gap: 8,
+                        transition: "all .15s ease",
+                      }}
                     >
-                      {calculating ? "Calculando…" : "Calcular envío"}
-                    </Btn>
-                  </div>
-                  {calcError && (
-                    <p style={{ margin: "8px 0 0", font: "500 12px/1.4 var(--ui-font)", color: "var(--accent)" }}>
-                      {calcError}
-                    </p>
-                  )}
-                </div>
+                      <span style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
+                        <span style={{ font: "700 14px/1.2 var(--ui-font)", color: "var(--ink)" }}>{opt.label}</span>
+                        <span style={{ font: "700 14px/1.2 var(--ui-font)", color: "var(--ink)", whiteSpace: "nowrap" }}>{fmt(opt.cost)}</span>
+                      </span>
+                      <span style={{ font: "400 12px/1.4 var(--ui-font)", color: "var(--ink-soft)" }}>{opt.description}</span>
+                    </button>
+                  );
+                })}
               </div>
             </section>
 
@@ -344,8 +331,8 @@ export default function CheckoutClient() {
                 <Row label="Descuento transferencia (10%)" value={`-${fmt(discount)}`} />
               )}
               <Row
-                label={<>Envío {shipping && <span style={{ color: "var(--muted)", fontWeight: 400 }}>· {shipping.label}</span>}</>}
-                value={shipping ? (shipping.cost === 0 ? "Gratis" : fmt(shipping.cost)) : "Calculá tu CP"}
+                label={shipping?.label ?? "Envío"}
+                value={shipping ? fmt(shipping.cost) : "Elegí el envío"}
                 muted={!shipping}
               />
               <Row label="Total" value={fmt(total)} big />
@@ -360,7 +347,7 @@ export default function CheckoutClient() {
             </Btn>
             {(!shipping || !paymentMethod) && (
               <p style={{ margin: 0, font: "400 12px/1.4 var(--ui-font)", color: "var(--muted)", textAlign: "center" }}>
-                {!shipping ? "Calculá el envío para poder continuar." : "Elegí un método de pago para continuar."}
+                {!shipping ? "Elegí cómo querés recibir el pedido." : "Elegí un método de pago para continuar."}
               </p>
             )}
             {submitNote && (

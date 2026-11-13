@@ -76,7 +76,7 @@ function totalsRowsHtml(order: OrderInfo): string {
   if (order.discount > 0) {
     rows.push(["Descuento transferencia (10%)", `-${fmt(order.discount)}`]);
   }
-  rows.push([`Envío${order.shipping.label ? ` · ${order.shipping.label}` : ""}`, order.shipping.cost === 0 ? "Gratis" : fmt(order.shipping.cost)]);
+  rows.push([order.shipping.label || "Envío", order.shipping.cost === 0 ? "Gratis" : fmt(order.shipping.cost)]);
   rows.push(["Total", fmt(order.total), true]);
 
   return rows
