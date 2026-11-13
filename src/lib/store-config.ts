@@ -11,6 +11,12 @@ export const TRANSFER_DISCOUNT_RATE = 0.1;
 // Máximo de prendas por pedido (frena que alguien reserve todo el catálogo de una vez)
 export const MAX_ITEMS_PER_ORDER = 6;
 
+// Horas que quedan reservadas las prendas de un pedido por transferencia sin confirmar
+export const TRANSFER_RESERVATION_HOURS = 48;
+
+// Dirección pública del sitio (links de los mails). Se puede pisar con la variable SITE_URL.
+export const SITE_URL = (process.env.SITE_URL || "https://amapolatejidos.com.ar").replace(/\/$/, "");
+
 // Recargo sobre todos los precios cargados (0.05 = 5%). Poné 0 para sacarlo.
 export const PRICE_MARKUP = 0.05;
 

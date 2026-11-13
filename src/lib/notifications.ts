@@ -1,7 +1,8 @@
 import { Resend } from "resend";
 import Twilio from "twilio";
 import { fmt } from "@/lib/data";
-import { TRANSFER_ALIAS, ADMIN_WHATSAPP_DISPLAY } from "@/lib/store-config";
+import { TRANSFER_ALIAS, ADMIN_WHATSAPP_DISPLAY, TRANSFER_RESERVATION_HOURS } from "@/lib/store-config";
+import { orderActionUrl } from "@/lib/order-actions";
 
 // Wordmark en texto, no imagen: Gmail no soporta de forma confiable imágenes
 // `data:` (base64) incrustadas en el mail, y una URL hosteada depende de que el
@@ -103,6 +104,9 @@ function buildBuyerEmailHtml(order: OrderInfo): string {
             Una vez que hagas la transferencia, enviá el comprobante de pago por WhatsApp al
             <strong>${escapeHtml(ADMIN_WHATSAPP_DISPLAY)}</strong>. Apenas lo recibamos, confirmamos tu pedido y coordinamos el envío.
           </p>
+          <p style="margin:10px 0 0;font:400 13px/1.5 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${BRAND.inkSoft};">
+            Te reservamos las prendas por ${TRANSFER_RESERVATION_HOURS} horas. Si no recibimos la transferencia en ese plazo, vuelven a estar disponibles en la tienda.
+          </p>
         </td></tr>
       </table>`
       : `
@@ -145,6 +149,19 @@ function buildBuyerEmailHtml(order: OrderInfo): string {
       </td></tr>
     </table>
   </div>`;
+}
+
+/** Botones "Pago recibido" / "Liberar prendas" del mail al vendedor (transferencia). */
+function adminActionButtons(orderId: string): string {
+  const confirm = orderActionUrl("confirmar", orderId);
+  const release = orderActionUrl("liberar", orderId);
+  if (!confirm || !release) {
+    console.error("[notifications] Falta ORDER_ACTION_SECRET — el mail al vendedor sale sin botones para confirmar/liberar.");
+    return "";
+  }
+  const btn = (href: string, label: string, bg: string) =>
+    `<a href="${escapeHtml(href)}" style="display:inline-block;margin:12px 8px 0 0;padding:12px 18px;border-radius:999px;background:${bg};color:#FFFFFF;text-decoration:none;font:700 14px/1 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;">${label}</a>`;
+  return btn(confirm, "✅ Pago recibido", BRAND.coral) + btn(release, "Liberar prendas", BRAND.plum);
 }
 
 function buildAdminEmailHtml(order: OrderInfo): string {
@@ -191,7 +208,9 @@ function buildAdminEmailHtml(order: OrderInfo): string {
               <tr><td style="padding:16px 18px;">
                 <p style="margin:0;font:400 13px/1.5 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${BRAND.ink};">
                   Esperá el comprobante por WhatsApp antes de confirmar el pedido y coordinar el envío.
+                  Las prendas quedan reservadas ${TRANSFER_RESERVATION_HOURS} horas: si no confirmás el pago, vuelven solas a la tienda.
                 </p>
+                ${adminActionButtons(order.orderId)}
               </td></tr>
             </table>`
           : ""}
