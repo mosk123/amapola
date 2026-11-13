@@ -5,51 +5,22 @@ import { getFreshCatalog, variantKey, markSold, releaseSold } from "@/lib/catalo
 import { isShippingMethod, shippingFor, type ShippingMethod } from "@/lib/shipping";
 import { sendBuyerOrderEmail, notifyAdminNewOrder, type OrderInfo } from "@/lib/notifications";
 import { TRANSFER_DISCOUNT_RATE } from "@/lib/store-config";
+import { parseOrderInput, checkOrderRate } from "@/lib/checkout-guard";
 import type { ColorKey } from "@/types";
 
-interface CheckoutItemInput {
-  id: string;
-  color: ColorKey;
-  size: string;
-  qty: number;
-}
-
-interface CheckoutContact {
-  name: string;
-  email: string;
-  phone: string;
-  street: string;
-  city: string;
-  province: string;
-  postalCode: string;
-}
-
-interface TransferenciaRequestBody {
-  items: CheckoutItemInput[];
-  contact: CheckoutContact;
-  shippingMethod: ShippingMethod;
-}
-
-const REQUIRED_CONTACT_FIELDS: (keyof CheckoutContact)[] = [
-  "name", "email", "phone", "street", "city", "province", "postalCode",
-];
 
 export async function POST(request: NextRequest) {
-  let body: TransferenciaRequestBody;
+  let body: unknown;
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: "Body inválido." }, { status: 400 });
   }
 
-  const { items, contact, shippingMethod } = body;
-
-  if (!Array.isArray(items) || items.length === 0) {
-    return NextResponse.json({ error: "El carrito está vacío." }, { status: 400 });
-  }
-  if (!contact || REQUIRED_CONTACT_FIELDS.some((f) => !contact[f]?.trim())) {
-    return NextResponse.json({ error: "Faltan datos de contacto o dirección." }, { status: 400 });
-  }
+  // Forma de los datos, tope de prendas por pedido y datos de contacto (texto, con largo máximo)
+  const parsed = parseOrderInput(body);
+  if ("error" in parsed) return parsed.error;
+  const { items, contact, shippingMethod } = parsed;
   if (!isShippingMethod(shippingMethod)) {
     return NextResponse.json({ error: "Elegí cómo querés recibir el pedido." }, { status: 400 });
   }
@@ -57,11 +28,6 @@ export async function POST(request: NextRequest) {
   // Mismo criterio que /api/checkout: nunca confiamos en precios del cliente,
   // reconstruimos cada línea desde el catálogo real.
   const lines: { title: string; description: string; quantity: number; unit_price: number }[] = [];
-  // La misma prenda no puede venir dos veces
-  const seen = new Set(items.map((it: { id: string; color: string; size: string }) => `${it.id}|${it.color}|${it.size}`));
-  if (seen.size !== items.length) {
-    return NextResponse.json({ error: "Hay prendas repetidas en el carrito." }, { status: 400 });
-  }
   // Stock real, leído de la base en este momento (no de caché): una prenda única ya vendida no se puede volver a comprar
   let catalog;
   try {
@@ -80,6 +46,12 @@ export async function POST(request: NextRequest) {
     const { product } = check;
     const variantId = product.variantIds?.[variantKey(item.color, item.size)];
     if (variantId) variantIds.push(variantId);
+    // En producción cada prenda tiene que poder reservarse en la base: si no, el pedido saldría
+    // sin bloquear stock (catálogo de respaldo porque la base falló o no está configurada).
+    else if (process.env.NODE_ENV === "production") {
+      console.error(`[checkout] ${product.id} (${item.color} / ${item.size}) sin variante en la base — se rechaza el pedido.`);
+      return NextResponse.json({ error: "No pudimos verificar el stock. Probá de nuevo en un momento." }, { status: 503 });
+    }
     const qty = 1;
     lines.push({
       title: product.name,
@@ -108,6 +80,10 @@ export async function POST(request: NextRequest) {
     shipping,
     total,
   };
+
+  // Límite de pedidos por IP: se cuenta recién acá, cuando el pedido es válido y va a reservar stock
+  const limited = checkOrderRate(request, "transferencia");
+  if (limited) return limited;
 
   // Prenda única: queda reservada (vendida) apenas se hace el pedido, para que nadie más la compre
   // mientras llega la transferencia. Si no se paga, se vuelve a "disponible" desde Supabase.

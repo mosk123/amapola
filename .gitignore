@@ -20,3 +20,7 @@ public/images/products-web/
 
 # caché de compilación de TypeScript
 *.tsbuildinfo
+
+# skills instaladas localmente (npx skills)
+.agents/
+skills-lock.json

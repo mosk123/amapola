@@ -8,6 +8,9 @@ export const ADMIN_WHATSAPP_DISPLAY = "2324-314833";
 
 export const TRANSFER_DISCOUNT_RATE = 0.1;
 
+// Máximo de prendas por pedido (frena que alguien reserve todo el catálogo de una vez)
+export const MAX_ITEMS_PER_ORDER = 6;
+
 // Recargo sobre todos los precios cargados (0.05 = 5%). Poné 0 para sacarlo.
 export const PRICE_MARKUP = 0.05;
 
