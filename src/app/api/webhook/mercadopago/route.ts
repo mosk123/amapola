@@ -3,6 +3,7 @@ import { MercadoPagoConfig, Payment } from "mercadopago";
 import { revalidatePath } from "next/cache";
 import { sendBuyerOrderEmail, notifyAdminNewOrder, type OrderInfo } from "@/lib/notifications";
 import { markSold, isPaymentProcessed } from "@/lib/catalog";
+import { verifyMpSignature } from "@/lib/mp-signature";
 
 interface WebhookBody {
   type?: string;
@@ -36,6 +37,22 @@ export async function POST(request: NextRequest) {
   // Solo nos interesan notificaciones de pago — el resto (merchant_order, etc.) se ignora.
   if (type !== "payment" || !paymentId) {
     return NextResponse.json({ received: true });
+  }
+
+  // Los ids de pago de MP son numéricos: cualquier otra cosa no se consulta.
+  if (!/^\d{1,20}$/.test(String(paymentId))) {
+    console.warn(`[webhook] Id de pago con formato inválido — se ignora.`);
+    return NextResponse.json({ received: true });
+  }
+
+  // Firma de Mercado Pago: si la clave está configurada, se rechaza todo lo que no venga firmado por MP.
+  const signature = verifyMpSignature(request.headers, params.get("data.id") ?? String(paymentId));
+  if (signature === "invalid") {
+    console.warn(`[webhook] Notificación del pago ${paymentId} con firma inválida — rechazada.`);
+    return NextResponse.json({ error: "Firma inválida." }, { status: 401 });
+  }
+  if (signature === "not-configured") {
+    console.warn("[webhook] Falta MP_WEBHOOK_SECRET: no se verifica la firma (el pago igual se consulta en Mercado Pago).");
   }
 
   const accessToken = process.env.MP_ACCESS_TOKEN;

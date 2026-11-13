@@ -155,7 +155,8 @@ export async function POST(request: NextRequest) {
         // Mercado Pago exige que la success URL sea HTTPS para auto_return — en local (http)
         // lo omitimos; el usuario igual vuelve al sitio con el botón manual del checkout.
         ...(origin.startsWith("https://") ? { auto_return: "approved" as const } : {}),
-        notification_url: `${origin}/api/webhook/mercadopago`,
+        // source_news=webhooks: solo notificaciones nuevas (firmadas), no el IPN viejo sin firma
+        notification_url: `${origin}/api/webhook/mercadopago?source_news=webhooks`,
       },
     });
 
