@@ -37,7 +37,8 @@ export default function ProductCard({ product: p, variant }: ProductCardProps) {
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       onClick={() => router.push(showCover ? `/producto/${p.id}` : `/producto/${p.id}?color=${color}`)}
-      className="pcard"
+      className="pcard zoom-card"
+      data-reveal
       style={{
         cursor: "pointer", display: "flex", flexDirection: "column", minWidth: 0,
         background: "var(--surface)", borderRadius: "var(--radius)",

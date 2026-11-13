@@ -42,13 +42,16 @@ export default function Photo({
   // Fotos que fallaron al cargar (ej: todavía no se copiaron a la carpeta) → se muestra el placeholder
   const [failed, setFailed] = useState<Record<string, true>>({});
   const markFailed = (s: string) => setFailed((f) => ({ ...f, [s]: true }));
+  // Fotos que ya terminaron de bajar: hasta entonces se ve el skeleton y después aparecen con fundido
+  const [loaded, setLoaded] = useState<Record<string, true>>({});
+  const markLoaded = (s: string) => setLoaded((l) => ({ ...l, [s]: true }));
   const okSrc = src && !failed[src] ? src : undefined;
   const okAlt = altSrc && !failed[altSrc] ? altSrc : undefined;
   const borderRadius = round != null ? round : "var(--radius)";
 
   return (
     <div
-      className={className}
+      className={[className, okSrc && !loaded[okSrc] ? "photo-loading" : ""].filter(Boolean).join(" ") || undefined}
       style={{
         position: "relative",
         aspectRatio: ratio,
@@ -65,7 +68,8 @@ export default function Photo({
           alt={alt || label || ""}
           fill
           sizes="(max-width: 768px) 100vw, 50vw"
-          style={{ objectFit: "cover" }}
+          style={{ objectFit: "cover", opacity: loaded[okSrc] ? 1 : 0, transition: "opacity .45s ease, scale .7s cubic-bezier(.2,.7,.2,1)" }}
+          onLoad={() => markLoaded(okSrc)}
           onError={() => markFailed(okSrc)}
         />
       ) : (
@@ -93,7 +97,7 @@ export default function Photo({
           alt={alt || label || ""}
           fill
           sizes="(max-width: 768px) 100vw, 50vw"
-          style={{ objectFit: "cover", opacity: showAlt ? 1 : 0, transition: "opacity .35s ease" }}
+          style={{ objectFit: "cover", opacity: showAlt ? 1 : 0, transition: "opacity .35s ease, scale .7s cubic-bezier(.2,.7,.2,1)" }}
           onError={() => markFailed(okAlt)}
         />
       )}

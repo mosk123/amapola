@@ -263,3 +263,104 @@ em {
   background: var(--line-strong);
   border-radius: 3px;
 }
+
+/* ── Skeletons (carga) ──
+   Bloque con brillo que se desliza; .skel lo pinta y .photo-loading lo usa de fondo
+   mientras baja una foto. Con "reducir movimiento" queda quieto. */
+.skel,
+.photo-loading {
+  background-color: var(--bg-2);
+  background-image: linear-gradient(100deg, transparent 20%, color-mix(in srgb, var(--surface) 70%, transparent) 50%, transparent 80%);
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  animation: skel-shine 1.4s ease-in-out infinite;
+}
+.skel { border-radius: var(--radius-sm); }
+.skel-text { height: 12px; border-radius: 999px; }
+@media (min-width: 640px) { .skel-center-desktop { align-items: center; } }
+
+@keyframes skel-shine {
+  from { background-position: 150% 0; }
+  to { background-position: -50% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skel, .photo-loading { animation: none; }
+}
+
+/* ── Animaciones ──
+   Todo suave y corto; con "reducir movimiento" se apaga (bloque al final). */
+
+/* Cambio de página: fundido (solo opacidad, ver app/template.tsx) */
+.page-enter { animation: page-in .4s ease both; }
+@keyframes page-in { from { opacity: 0; } }
+
+/* Portada: el texto entra escalonado, la foto con un leve acercamiento y la insignia "salta" */
+.hero-in > * { animation: rise-in .7s cubic-bezier(.2,.7,.2,1) both; }
+.hero-in > :nth-child(2) { animation-delay: .08s; }
+.hero-in > :nth-child(3) { animation-delay: .16s; }
+.hero-in > :nth-child(4) { animation-delay: .24s; }
+.hero-photo > :first-child { animation: photo-in .9s cubic-bezier(.2,.7,.2,1) .1s both; }
+.hero-badge { animation: badge-pop .6s cubic-bezier(.34,1.56,.64,1) .55s both; }
+
+@keyframes rise-in { from { opacity: 0; translate: 0 16px; } }
+@keyframes photo-in { from { opacity: 0; scale: .97; } }
+@keyframes badge-pop { from { opacity: 0; scale: .6; rotate: -12deg; } }
+
+/* Aparecer al hacer scroll (data-reveal + components/RevealObserver).
+   Usa translate/animation para no pisar el transform ni el transition del hover de las cards. */
+.reveal-pending { opacity: 0; }
+.reveal-in { animation: rise-in .7s cubic-bezier(.2,.7,.2,1) var(--reveal-delay, 0ms) both; }
+
+/* Zoom leve de la foto al pasar el mouse (solo con mouse, no en celulares) */
+@media (hover: hover) {
+  .zoom-card:hover img { scale: 1.04; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter, .hero-in > *, .hero-photo > :first-child, .hero-badge, .reveal-in { animation: none; }
+  .reveal-pending { opacity: 1; }
+  .zoom-card:hover img { scale: none; }
+}
+
+/* Logo del menú: zoom leve + brillo de izquierda a derecha al pasar el mouse.
+   El brillo usa el mismo logo como máscara, así solo pasa por encima de las letras. */
+.logo-fx-inner {
+  position: relative;
+  display: block;
+  transition: scale .45s cubic-bezier(.34,1.56,.64,1);
+}
+.logo-shine {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 36%, var(--brand-coral) 43%, var(--brand-mustard) 50%, var(--brand-lime) 57%, transparent 64%) no-repeat;
+  background-size: 250% 100%;
+  background-position: 130% 0;
+  -webkit-mask: url(/logo/wordmark-light.png) center / 100% 100% no-repeat;
+  mask: url(/logo/wordmark-light.png) center / 100% 100% no-repeat;
+}
+.logo-fx:hover .logo-fx-inner,
+.logo-fx:focus-visible .logo-fx-inner { scale: 1.06; }
+.logo-fx:hover .logo-shine,
+.logo-fx:focus-visible .logo-shine {
+  background-position: -30% 0;
+  transition: background-position .9s ease;
+}
+
+/* Celulares (sin mouse): el brillo pasa una sola vez al abrir la web.
+   El menú no se vuelve a montar al cambiar de página, así que no se repite en cada navegación. */
+@media (hover: none) {
+  .logo-shine { animation: logo-shine-once 1.3s ease .8s both; }
+}
+@keyframes logo-shine-once {
+  from { background-position: 130% 0; }
+  to { background-position: -30% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-fx-inner { transition: none; }
+  .logo-shine { animation: none; }
+  .logo-fx:hover .logo-fx-inner, .logo-fx:focus-visible .logo-fx-inner { scale: none; }
+  .logo-fx:hover .logo-shine, .logo-fx:focus-visible .logo-shine { transition: none; background-position: 130% 0; }
+}

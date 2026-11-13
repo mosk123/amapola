@@ -14,3 +14,9 @@ npm-debug.log*
 # fotos de prueba locales (las definitivas van a Cloudinary)
 public/images/products/
 public/images/products-web/
+
+# configuración local de Claude Code (permisos, sesiones) — nunca al repo
+.claude/
+
+# caché de compilación de TypeScript
+*.tsbuildinfo

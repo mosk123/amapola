@@ -67,15 +67,19 @@ export default function Nav() {
     }}>
       <div className="wrap" style={{ display: "flex", alignItems: "center", gap: 20, padding: "12px var(--pad)" }}>
         {/* Logo */}
-        <Link href="/" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
-          <Image
-            src="/logo/wordmark-light.png"
-            alt="Amapola Knitwear"
-            width={150}
-            height={48}
-            style={{ objectFit: "contain", width: "clamp(118px, 30vw, 150px)", height: "auto" }}
-            priority
-          />
+        {/* Al pasar el mouse: zoom leve + brillo que cruza las letras (ver .logo-fx en globals.css) */}
+        <Link href="/" className="logo-fx" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
+          <span className="logo-fx-inner">
+            <Image
+              src="/logo/wordmark-light.png"
+              alt="Amapola Knitwear"
+              width={150}
+              height={48}
+              style={{ objectFit: "contain", width: "clamp(118px, 30vw, 150px)", height: "auto", display: "block" }}
+              priority
+            />
+            <span className="logo-shine" aria-hidden />
+          </span>
         </Link>
 
         {/* Links (desktop) */}

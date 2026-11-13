@@ -58,7 +58,7 @@ export default async function Home() {
           "--cols": "1.05fr .95fr", alignItems: "center",
           padding: "clamp(40px,7vw,96px) var(--pad)",
         } as React.CSSProperties}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 24, maxWidth: 520 }}>
+          <div className="hero-in" style={{ display: "flex", flexDirection: "column", gap: 24, maxWidth: 520 }}>
             <Eyebrow>Tejidos artesanales · desde 2026</Eyebrow>
             <h1 style={{
               margin: "0 0 8px", font: "var(--h1-font)", color: "var(--ink)",
@@ -94,7 +94,7 @@ export default async function Home() {
           </div>
 
           {/* Foto hero + insignia */}
-          <div style={{ position: "relative" }}>
+          <div className="hero-photo" style={{ position: "relative" }}>
             <Photo
               src={HERO_IMAGE}
               alt="Prendas tejidas a mano"
@@ -102,13 +102,13 @@ export default async function Home() {
               tone="blush"
               ratio="4 / 5"
             />
-            <div style={{
+            <div className="hero-badge" style={{
               position: "absolute", bottom: -22, left: "clamp(-22px, -2vw, 12px)",
               width: "clamp(96px, 26vw, 132px)", height: "clamp(96px, 26vw, 132px)", borderRadius: "50%",
               background: "var(--surface)", boxShadow: "var(--shadow)",
               display: "grid", placeItems: "center", padding: 12,
             }}>
-              <Image src="/logo/isotipo-color.png" alt="Amapola" width={106} height={90} style={{ objectFit: "contain" }} />
+              <Image src="/logo/isotipo-color.png" alt="Amapola" width={106} height={90} style={{ objectFit: "contain", width: "100%", height: "auto" }} />
             </div>
           </div>
         </div>
@@ -116,7 +116,7 @@ export default async function Home() {
 
       {/* CATEGORÍAS */}
       <section className="wrap" style={{ padding: "clamp(48px,6vw,84px) var(--pad)" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 28, flexWrap: "wrap", gap: 12 }}>
+        <div data-reveal style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 28, flexWrap: "wrap", gap: 12 }}>
           <div>
             <Eyebrow>Qué tejemos</Eyebrow>
             <h2 style={{
@@ -133,7 +133,7 @@ export default async function Home() {
         </div>
         <div className="grid-n2 carousel-mobile" style={{ "--n": 4 } as React.CSSProperties}>
           {CATEGORIES.map((c, i) => (
-            <Link key={c.id} href={`/catalogo/${c.id}`} style={{ textDecoration: "none", display: "flex", flexDirection: "column", gap: 14 }}>
+            <Link key={c.id} href={`/catalogo/${c.id}`} data-reveal className="zoom-card" style={{ textDecoration: "none", display: "flex", flexDirection: "column", gap: 14 }}>
               <Photo
                 src={CAT_IMAGES[c.id]}
                 alt={c.label}
@@ -153,7 +153,7 @@ export default async function Home() {
       {/* DESTACADOS */}
       <section style={{ background: "var(--bg-2)", borderTop: "1px solid var(--line)", borderBottom: "1px solid var(--line)" }}>
         <div className="wrap" style={{ padding: "clamp(48px,6vw,84px) var(--pad)" }}>
-          <div style={{ textAlign: "center", marginBottom: 36 }}>
+          <div data-reveal style={{ textAlign: "center", marginBottom: 36 }}>
             <Eyebrow>Lo más querido</Eyebrow>
             <h2 style={{
               margin: "10px 0 0", font: "var(--h2-font)", color: "var(--ink)",

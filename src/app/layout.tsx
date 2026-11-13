@@ -7,6 +7,7 @@ import { getCatalog } from "@/lib/catalog";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
+import RevealObserver from "@/components/RevealObserver";
 
 // Fuentes incluidas en el proyecto (paquetes @fontsource), sin bajarlas de Google al compilar:
 // el servidor de build de Hostinger no llega a fonts.googleapis.com.
@@ -61,6 +62,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <main style={{ flex: 1 }}>{children}</main>
             <Footer />
             <CartDrawer />
+            <RevealObserver />
           </div>
         </CartProvider>
         </CatalogProvider>
