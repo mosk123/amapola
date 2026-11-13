@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { MercadoPagoConfig, Preference } from "mercadopago";
-import { getProductById, validateCartLine } from "@/lib/data";
+import { getProductById, validateCartLine, priceOf } from "@/lib/data";
 import { calculateShipping } from "@/lib/shipping";
 import type { ColorKey } from "@/types";
 
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
       title: product.name,
       description: `${item.color} · talle ${item.size}`,
       quantity: qty,
-      unit_price: product.price,
+      unit_price: priceOf(product, item.color as ColorKey),
     });
   }
 

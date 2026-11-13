@@ -1,18 +1,21 @@
 import Image from "next/image";
 import Link from "next/link";
-import { CATEGORIES, CATALOG_PRODUCTS, getProductById } from "@/lib/data";
+// CATALOG_PRODUCTS: volver a importarlo si se reactivan los STATS
+import { CATEGORIES, getProductById } from "@/lib/data";
 import type { ColorKey, Product } from "@/types";
 import Eyebrow from "@/components/Eyebrow";
 import Photo from "@/components/Photo";
 import ProductCard from "@/components/ProductCard";
 import Icon from "@/components/Icon";
 
-// El número de modelos sale del catálogo, así se actualiza solo al agregar o sacar productos
-const STATS = [
-  { n: "100%", l: "fibras naturales" },
-  { n: String(CATALOG_PRODUCTS.length), l: "modelos tejidos" },
-  { n: "Listo", l: "para enviar" },
-];
+// STATS del hero: ocultos por ahora. Para volver a mostrarlos, descomentar esto,
+// el import de CATALOG_PRODUCTS y el bloque {/* STATS */} del hero.
+// // El número de modelos sale del catálogo, así se actualiza solo al agregar o sacar productos
+// const STATS = [
+//   { n: "100%", l: "fibras naturales" },
+//   { n: String(CATALOG_PRODUCTS.length), l: "modelos tejidos" },
+//   { n: "Listo", l: "para enviar" },
+// ];
 
 const CAT_TONES = ["caramel", "sage", "rosa", "blush"] as const;
 
@@ -24,7 +27,7 @@ const CAT_IMAGES: Record<string, string> = {
   sweaters:   "/images/products-web/prueba-sweater/rosa-1.jpg",
   remeras:    "/images/products-web/prueba-remera/remeraVioleta-1.jpg",
   pantalones: "/images/products-web/prueba-pantalon/pantalon.jpg",
-  vestidos:   "/images/products-web/prueba-vestido/vestidoVerde-1.jpg",
+  vestidos:   "/images/products-web/prueba-vestido/vestido-1.jpg",
   conjuntos:  "/images/products-web/prueba-conjunto/conjunto-diseño-marino-1.jpg",
   enteritos:  "/images/products-web/prueba-body/azul-1.jpg",
   cubrepanal: "/images/products-web/prueba-cubrepañal/cubrepañal.jpg",
@@ -75,6 +78,7 @@ export default function Home() {
                 Sweaters
               </Link>
             </div>
+            {/* STATS (ocultos por ahora)
             <div style={{ display: "flex", gap: 24, marginTop: 6 }}>
               {STATS.map(({ n, l }) => (
                 <div key={l}>
@@ -83,6 +87,7 @@ export default function Home() {
                 </div>
               ))}
             </div>
+            */}
           </div>
 
           {/* Foto hero + insignia */}

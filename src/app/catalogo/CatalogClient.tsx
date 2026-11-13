@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect, useRef } from "react";
 import Image from "next/image";
-import { CATEGORIES, CATALOG_PRODUCTS } from "@/lib/data";
+import { CATEGORIES, CATALOG_PRODUCTS, minPrice } from "@/lib/data";
 import type { ColorKey, Product } from "@/types";
 import Eyebrow from "@/components/Eyebrow";
 import ProductCard from "@/components/ProductCard";
@@ -75,8 +75,8 @@ export default function CatalogClient({ initialCat }: CatalogClientProps) {
     // "Colores" = prendas que se pueden elegir en más de un color; el resto filtra por audience
     if (aud === "Colores") list = list.filter((p) => p.colors.length > 1);
     else if (aud !== "Todos") list = list.filter((p) => p.audience === aud);
-    if (sort === "price-asc") list = [...list].sort((a, b) => a.price - b.price);
-    if (sort === "price-desc") list = [...list].sort((a, b) => b.price - a.price);
+    if (sort === "price-asc") list = [...list].sort((a, b) => minPrice(a) - minPrice(b));
+    if (sort === "price-desc") list = [...list].sort((a, b) => minPrice(b) - minPrice(a));
     if (sort === "featured") list = [...list].sort((a, b) => (b.badge ? 1 : 0) - (a.badge ? 1 : 0));
     return list;
   }, [cats, aud, sort]);

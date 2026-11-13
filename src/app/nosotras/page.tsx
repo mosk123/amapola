@@ -3,9 +3,9 @@ import Eyebrow from "@/components/Eyebrow";
 import Icon from "@/components/Icon";
 
 const VALORES = [
-  { icon: "clock" as const, title: "Tiempo justo", text: "No aceleramos el proceso. Cada pieza se termina cuando está lista, no antes." },
-  { icon: "leaf" as const, title: "Fibras nobles", text: "Trabajamos con merino, alpaca, pima y lana de oveja. Sin sintéticos." },
-  { icon: "hand" as const, title: "Manos que saben", text: "Nuestras tejedoras tienen décadas de oficio. Eso no se aprende en un video." },
+  { icon: "clock" as const, title: "Tiempo justo", text: "Cada prenda lleva su tiempo. No aceleramos los procesos: respetamos los tiempos del tejido y el cuidado que requiere cada creación." },
+  { icon: "leaf" as const, title: "Fibras nobles", text: "Elegimos fibras nobles, como hilos de algodón y lanas hipoalergénicas, priorizando la calidad, la suavidad y el confort." },
+  { icon: "hand" as const, title: "Manos que saben", text: "Detrás de cada pieza hay años de experiencia, dedicación y una mirada atenta a cada punto y cada detalle." },
 ];
 
 export default function AboutPage() {

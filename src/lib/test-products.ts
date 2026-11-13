@@ -123,7 +123,7 @@ export const TEST_PRODUCTS: Product[] = [
     },
   },
   {
-    id: "prueba-cubrepanal", name: "Cubrepañal", cat: "cubrepanal", audience: "Clásico",
+    id: "prueba-cubrepanal", name: "Cubrepañal Nube", cat: "cubrepanal", audience: "Clásico",
     price: 18000, colors: ["azulmarino", "celeste", "blanco", "rosa"], sizes: TALLES_CUBREPANAL,
     stock: { azulmarino: ["0-6 m"], celeste: ["0-6 m"], blanco: ["0-6 m"], rosa: ["0-6 m"] },
     measures: [M_CUBREPANAL],
@@ -150,8 +150,8 @@ export const TEST_PRODUCTS: Product[] = [
     gallery: { default: serie("prueba-arcoiris", "arcoiris", 5) },
   },
   {
-    // Body musculosa: cerezo (1 color) y cerezo y blanco (2 colores)
-    id: "prueba-body", name: "Body Musculosa", cat: "bodys", audience: "Clásico",
+    // Body Frambuesa (musculosa): cereza liso y rayado cereza y blanco
+    id: "prueba-body", name: "Body Frambuesa", cat: "bodys", audience: "Clásico",
     price: 30000, colors: ["1color", "2colores"], sizes: TALLES_BODY,
     stock: { "1color": ["3-6 m"], "2colores": ["3-6 m"] },
     measures: [M_BODY],
@@ -166,7 +166,7 @@ export const TEST_PRODUCTS: Product[] = [
     },
   },
   {
-    id: "prueba-enterito", name: "Enterito", cat: "enteritos", audience: "Clásico",
+    id: "prueba-enterito", name: "Enterito Hojitas", cat: "enteritos", audience: "Clásico",
     price: 45000, colors: ["azulmarino", "crudo"], sizes: ["RN-3 m"],
     stock: { azulmarino: ["RN-3 m"], crudo: ["RN-3 m"] },
     measures: [M_ENTERITO],
@@ -182,7 +182,7 @@ export const TEST_PRODUCTS: Product[] = [
   {
     id: "prueba-conjunto-combinado", name: "Conjunto Combinado", cat: "conjuntos", audience: "Clásico",
     price: 65000, colors: ["verdeclaro", "bosque"], sizes: TALLES,
-    soldOut: ["verdeclaro"],
+    soldOut: ["bosque"],
     pieces: {
       verdeclaro: [{ name: "Remera", size: "9-12 m" }, { name: "Short", size: "9-12 m" }],
       bosque:     [{ name: "Remera", size: "9-12 m" }, { name: "Short", size: "9-12 m" }],
@@ -216,14 +216,29 @@ export const TEST_PRODUCTS: Product[] = [
     },
   },
   {
-    // Lacre claro y crudo: fotos pendientes (muestran el placeholder)
-    id: "prueba-vestido", name: "Vestido", cat: "vestidos", audience: "Clásico",
-    price: 50000, colors: ["botella", "lacre", "crudo"], sizes: TALLES_VESTIDO,
-    stock: { lacre: ["6-9 m"], botella: ["6-12 m"], crudo: ["12-18 m"] },
+    // Vestido Florcitas: calado en los hombros
+    id: "prueba-vestido", name: "Vestido Florcitas", cat: "vestidos", audience: "Clásico",
+    price: 65000, colors: ["botella", "crudo"], sizes: TALLES_VESTIDO,
+    stock: { botella: ["6-12 m"], crudo: ["12-18 m"] },
     measures: [M_VESTIDO],
     composition: "Hilo de algodón 8/6",
     badge: "Nuevo", fiber: "Algodón",
     short: "Vestido con calado en los hombros y puntilla.", desc: TEXTO,
-    gallery: { botella: serie("prueba-vestido", "vestidoVerde", 3) },
+    gallery: {
+      botella: serie("prueba-vestido", "vestidoVerde", 3),
+      crudo:   serie("prueba-vestido", "vestidoCrudo", 3),
+    },
   },
+  {
+    // Vestido Ámbar: otro modelo, canesú calado
+    id: "prueba-vestido-ambar", name: "Vestido Ámbar", cat: "vestidos", audience: "Clásico",
+    price: 85000, colors: ["lacre"], sizes: TALLES_VESTIDO,
+    stock: { lacre: ["6-9 m"] },
+    measures: [M_VESTIDO],
+    composition: "Hilo de algodón 8/3",
+    badge: "Nuevo", fiber: "Algodón",
+    short: "Vestido con canesú calado.", desc: TEXTO,
+    gallery: { lacre: serie("prueba-vestido", "vestidoLacreclaro", 3) },
+  },
+
 ];

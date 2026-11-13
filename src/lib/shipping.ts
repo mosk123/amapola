@@ -7,9 +7,6 @@
 // Tope que subsidiamos nosotros — ningún envío le cuesta al cliente más que esto.
 export const MAX_SHIPPING_SUBSIDY = 5000;
 
-// Coincide con "Envío gratis desde $60.000" ya publicado en la home.
-const FREE_SHIPPING_THRESHOLD = 60000;
-
 type ShippingZone = "caba-gba" | "interior";
 
 const ZONE_COST: Record<ShippingZone, number> = {
@@ -39,10 +36,8 @@ export async function calculateShipping(
   const zone = resolveZone(postalCode);
   const label = ZONE_LABEL[zone];
 
-  if (cartTotal >= FREE_SHIPPING_THRESHOLD) {
-    return { cost: 0, label: `${label} · envío gratis` };
-  }
-
+  // Sin envío gratis por monto (se sacó a pedido). cartTotal queda en la firma para la API de Andreani.
+  void cartTotal;
   const cost = Math.min(ZONE_COST[zone], MAX_SHIPPING_SUBSIDY);
   return { cost, label };
 }

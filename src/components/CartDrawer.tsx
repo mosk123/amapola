@@ -2,12 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
-import { COLORS, fmt, getCrossSellProducts, getImages, toneFor } from "@/lib/data";
+import { COLORS, fmt, getCrossSellProducts, getImages, toneFor, priceLabel } from "@/lib/data";
 import Photo from "./Photo";
 import Btn from "./Btn";
 import Icon from "./Icon";
 
-const FREE_SHIPPING = 60000;
 
 export default function CartDrawer() {
   const { items, cartOpen, closeCart, removeFromCart, subtotal } = useCart();
@@ -112,7 +111,7 @@ export default function CartDrawer() {
                       >
                         <Photo src={getImages(p)[0]} alt={p.name} tone={toneFor(p)} ratio="1 / 1" round="var(--radius-sm)" />
                         <span style={{ font: "600 11px/1.25 var(--ui-font)", color: "var(--ink)" }}>{p.name}</span>
-                        <span style={{ font: "700 11px/1 var(--ui-font)", color: "var(--accent)" }}>{fmt(p.price)}</span>
+                        <span style={{ font: "700 11px/1 var(--ui-font)", color: "var(--accent)" }}>{priceLabel(p)}</span>
                       </button>
                     ))}
                   </div>
@@ -127,9 +126,7 @@ export default function CartDrawer() {
                 <span style={{ font: "700 18px/1 var(--ui-font)", color: "var(--ink)" }}>{fmt(subtotal)}</span>
               </div>
               <p style={{ margin: "0 0 14px", font: "500 11px/1.4 'IBM Plex Mono', monospace", color: "var(--muted)" }}>
-                {subtotal >= FREE_SHIPPING
-                  ? "✓ Tu pedido tiene envío gratis"
-                  : `Te faltan ${fmt(FREE_SHIPPING - subtotal)} para el envío gratis`}
+                El envío se calcula en el checkout con tu código postal
               </p>
               <Btn full size="lg" onClick={goToCheckout}>Finalizar compra</Btn>
             </div>

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { CATALOG_PRODUCTS, CATEGORIES, COLORS, fmt, getCover, getImages, toneFor } from "@/lib/data";
+import { CATALOG_PRODUCTS, CATEGORIES, COLORS, fmt, getCover, getImages, toneFor, priceLabel } from "@/lib/data";
 import Photo from "./Photo";
 import Icon from "./Icon";
 
@@ -120,7 +120,7 @@ export default function SearchPanel({ onClose }: { onClose: () => void }) {
                             {p.colors.map((c) => COLORS[c]?.label).join(" · ")}
                           </div>
                         </div>
-                        <span style={{ font: "700 14px/1 var(--ui-font)", color: "var(--ink)", whiteSpace: "nowrap" }}>{fmt(p.price)}</span>
+                        <span style={{ font: "700 14px/1 var(--ui-font)", color: "var(--ink)", whiteSpace: "nowrap" }}>{priceLabel(p)}</span>
                       </Link>
                     </li>
                   ))}

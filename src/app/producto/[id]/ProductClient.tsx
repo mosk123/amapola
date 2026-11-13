@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { COLORS, availableSizes, getCover, getImages, getRelatedProducts, fmt, toneFor } from "@/lib/data";
+import { COLORS, availableSizes, getCover, getImages, getRelatedProducts, fmt, toneFor, priceLabel } from "@/lib/data";
 import { useCart } from "@/context/CartContext";
 import type { Product, ColorKey } from "@/types";
 import Photo from "@/components/Photo";
@@ -11,6 +11,7 @@ import Eyebrow from "@/components/Eyebrow";
 import Icon from "@/components/Icon";
 import ProductCard from "@/components/ProductCard";
 import SizeGuide from "@/components/SizeGuide";
+import { whatsappLink } from "@/lib/store-config";
 
 interface Props {
   product: Product;
@@ -159,7 +160,7 @@ export default function ProductClient({ product: p, initialColor }: Props) {
               {p.name}
             </h1>
 
-            <span style={{ font: "700 26px/1 var(--ui-font)", color: "var(--ink)" }}>{fmt(p.price)}</span>
+            <span style={{ font: "700 26px/1 var(--ui-font)", color: "var(--ink)" }}>{priceLabel(p, color)}</span>
 
             {/* Descripción: texto fijo + composición (grosor del hilo) */}
             <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
@@ -261,6 +262,37 @@ export default function ProductClient({ product: p, initialColor }: Props) {
               </Btn>
             </div>
 
+            {/* Agotado o falta algún talle: invitar a pedirlo por WhatsApp */}
+            {color && (soldOut || (!pieces && avail.length < p.sizes.length)) && (
+              <div style={{
+                padding: "18px 20px", borderRadius: "var(--radius)",
+                border: "1.5px dashed var(--line-strong)", background: "var(--surface)",
+                display: "flex", flexDirection: "column", gap: 12,
+              }}>
+                <div>
+                  <p style={{ margin: 0, font: "600 15px/1.3 var(--ui-font)", color: "var(--ink)" }}>
+                    ¿Te enamoraste de este tejido?
+                  </p>
+                  <p style={{ margin: "6px 0 0", font: "400 13px/1.5 var(--ui-font)", color: "var(--ink-soft)" }}>
+                    Si está agotado o no encontrás tu talle, escribinos por WhatsApp. ¡Podemos tejerlo especialmente para vos!
+                  </p>
+                </div>
+                <a
+                  href={whatsappLink(`¡Hola! Me interesa este tejido: ${p.name} en color ${COLORS[color]?.label}. ¿Lo podrían tejer en mi talle?`)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    alignSelf: "flex-start", display: "inline-flex", alignItems: "center", gap: 8,
+                    padding: "11px 18px", borderRadius: "var(--btn-radius)",
+                    border: "1.5px solid var(--ink)", color: "var(--ink)", background: "transparent",
+                    font: "600 13px/1 var(--ui-font)", textDecoration: "none",
+                  }}
+                >
+                  <Icon name="chat" size={16} /> Escribinos por WhatsApp
+                </a>
+              </div>
+            )}
+
             {/* Detalles */}
             <div style={{
               padding: "18px 20px", borderRadius: "var(--radius)",
@@ -270,7 +302,7 @@ export default function ProductClient({ product: p, initialColor }: Props) {
               {[
                 ["leaf", `Fibra: ${p.fiber}`],
                 ["hand", "Tejido a mano · Listo para enviar"],
-                ["truck", "Envío gratis desde $60.000"],
+                ["truck", "Envíos a todo el país"],
               ].map(([icon, text]) => (
                 <div key={text} style={{ display: "flex", gap: 10, alignItems: "center" }}>
                   <span style={{ color: "var(--accent)" }}><Icon name={icon as "leaf"} size={17} /></span>

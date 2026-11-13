@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Photo from "./Photo";
 import ColorDots from "./ColorDots";
 import Icon from "./Icon";
-import { COLORS, fmt, getCover, getImages, toneFor } from "@/lib/data";
+import { COLORS, fmt, getCover, getImages, toneFor, priceLabel } from "@/lib/data";
 import type { ColorKey, Product } from "@/types";
 
 interface ProductCardProps {
@@ -71,7 +71,7 @@ export default function ProductCard({ product: p, variant }: ProductCardProps) {
             {p.name}{variant && ` · ${COLORS[color]?.label}`}
           </h3>
           <span style={{ font: "700 14px/1.5 var(--ui-font)", color: "var(--ink)", whiteSpace: "nowrap" }}>
-            {fmt(p.price)}
+            {priceLabel(p, showCover ? null : color)}
           </span>
         </div>
         <p className="hide-mobile" style={{ margin: 0, font: "400 13px/1.45 var(--ui-font)", color: "var(--ink-soft)" }}>{p.short}</p>

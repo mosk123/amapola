@@ -1,5 +1,6 @@
 import type { Category, ColorKey, ColorInfo, Product } from "@/types";
-import { TEST_PRODUCTS, TEST_PRODUCTS_ENABLED } from "./test-products";
+import { TEST_PRODUCTS, TEST_PRODUCTS_ENABLED } from "./test-products";
+import { PRICE_MARKUP } from "./store-config";
 
 // El orden de acá es el de la grilla del inicio, el menú "Filtrar" y el footer
 export const CATEGORIES: Category[] = [
@@ -27,8 +28,8 @@ export const COLORS: Record<ColorKey, ColorInfo> = {
   verde:     { label: "Verde",     hex: "#7A9A3E" },
   violeta:   { label: "Violeta",   hex: "#5E3A87" },
   // Variantes de body: liso o a rayas
-  "1color":   { label: "Cerezo",   hex: "#A7506F" },
-  "2colores": { label: "Cerezo y blanco", hex: "repeating-linear-gradient(0deg, #A7506F 0 3px, #FFFFFF 3px 6px)" },
+  "1color":   { label: "Cereza",   hex: "#A7506F" },
+  "2colores": { label: "Rayado cereza y blanco", hex: "repeating-linear-gradient(0deg, #A7506F 0 3px, #FFFFFF 3px 6px)" },
   crema:      { label: "Crema",       hex: "#EFE6D2" },
   verdeclaro: { label: "Lima",        hex: "#9DBF7E" },
   bosque:     { label: "Verde bosque",     hex: "#2F5D3A" },
@@ -319,4 +320,23 @@ export function validateCartLine(item: { id: string; color: string; size: string
     : availableSizes(product, color).includes(item.size);
   if (!okSize) return { error: `${product.name}: el talle ${item.size} no está disponible` };
   return { product };
+}
+
+/** Precio de un color (o el base si ese color no tiene precio propio). */
+export function priceOf(p: Product, color?: ColorKey | null): number {
+  const base = (color && p.priceByColor?.[color]) || p.price;
+  // Recargo general sobre el precio cargado (cubre la comisión de Mercado Pago). Redondeado a $50.
+  return Math.round((base * (1 + PRICE_MARKUP)) / 50) * 50;
+}
+
+/** Precio más bajo entre sus colores (para ordenar y mostrar "Desde"). */
+export function minPrice(p: Product): number {
+  return Math.min(...p.colors.map((c) => priceOf(p, c)));
+}
+
+/** Texto del precio: el del color elegido, o "Desde $X" si varía según el color. */
+export function priceLabel(p: Product, color?: ColorKey | null): string {
+  if (color) return fmt(priceOf(p, color));
+  const varies = p.colors.some((c) => priceOf(p, c) !== p.colors.map((x) => priceOf(p, x))[0]);
+  return varies ? `Desde ${fmt(minPrice(p))}` : fmt(priceOf(p, p.colors[0]));
 }

@@ -70,6 +70,8 @@ export type Product = {
    * Si el color tiene piezas, el detalle las muestra en lugar del selector de talle.
    */
   pieces?: Partial<Record<ColorKey, { name: string; size: string }[]>>;
+  /** Precio distinto para algunos colores (el resto usa `price`). */
+  priceByColor?: Partial<Record<ColorKey, number>>;
   /** Colores ya vendidos: se siguen viendo, con cartel "Agotado", pero no se pueden comprar. */
   soldOut?: ColorKey[];
   /** Composición (grosor del hilo), ej: "Hilo de algodón 8/3". Se muestra en la descripción. */

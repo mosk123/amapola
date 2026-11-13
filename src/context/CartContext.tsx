@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useCallback } from "react";
 import type { CartItem, ColorKey, Product } from "@/types";
+import { priceOf } from "@/lib/data";
 
 interface CartContextValue {
   items: CartItem[];
@@ -32,7 +33,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       );
       // Cada prenda es única: si ya está en el carrito no se suma otra
       if (idx >= 0) return prev;
-      return [...prev, { ...product, color, size, qty: 1 }];
+      // Precio del color elegido (algunos colores cuestan distinto)
+      return [...prev, { ...product, price: priceOf(product, color), color, size, qty: 1 }];
     });
     setCartOpen(true);
   }, []);

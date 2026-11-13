@@ -3,11 +3,11 @@
 import { useState } from "react";
 import Eyebrow from "@/components/Eyebrow";
 import Icon from "@/components/Icon";
-import { SOCIAL } from "@/lib/store-config";
+import { SOCIAL, whatsappLink } from "@/lib/store-config";
 
 // Cada tarjeta abre su canal (href)
 const CANALES = [
-  { icon: "chat" as const, label: "WhatsApp", value: "+54 9 2324-314833", note: "Lun–Vie 10–18 h", href: "https://wa.me/5492324314833" },
+  { icon: "chat" as const, label: "WhatsApp", value: "+54 9 2324-314833", note: "Lun–Vie 10–18 h", href: whatsappLink() },
   { icon: "mail" as const, label: "Email", value: "amapola.knitwear@gmail.com", note: "Respondemos en 24 h", href: "mailto:amapola.knitwear@gmail.com" },
   { icon: "instagram" as const, label: "Instagram", value: SOCIAL.instagram.handle, note: "DM siempre abierto", href: SOCIAL.instagram.url },
   { icon: "facebook" as const, label: "Facebook", value: SOCIAL.facebook.handle, note: "Seguinos y escribinos", href: SOCIAL.facebook.url },

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getProductById, validateCartLine } from "@/lib/data";
+import { getProductById, validateCartLine, priceOf } from "@/lib/data";
 import { calculateShipping } from "@/lib/shipping";
 import { sendBuyerOrderEmail, notifyAdminNewOrder, type OrderInfo } from "@/lib/notifications";
 import { TRANSFER_DISCOUNT_RATE } from "@/lib/store-config";
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
       title: product.name,
       description: `${item.color} · talle ${item.size}`,
       quantity: qty,
-      unit_price: product.price,
+      unit_price: priceOf(product, item.color as ColorKey),
     });
   }
 
