@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import type { ImageTone } from "@/types";
+import { cloudinaryLoader, isCloudinary } from "@/lib/cloudinary";
 
 const TONES: Record<ImageTone, [string, string]> = {
   blush:   ["var(--blush)", "var(--bg-2)"],
@@ -60,6 +61,7 @@ export default function Photo({
       {okSrc ? (
         <Image
           src={okSrc}
+          loader={isCloudinary(okSrc) ? cloudinaryLoader : undefined}
           alt={alt || label || ""}
           fill
           sizes="(max-width: 768px) 100vw, 50vw"
@@ -87,6 +89,7 @@ export default function Photo({
       {okSrc && okAlt && (
         <Image
           src={okAlt}
+          loader={isCloudinary(okAlt) ? cloudinaryLoader : undefined}
           alt={alt || label || ""}
           fill
           sizes="(max-width: 768px) 100vw, 50vw"

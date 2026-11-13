@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { MercadoPagoConfig, Payment } from "mercadopago";
+import { revalidatePath } from "next/cache";
 import { sendBuyerOrderEmail, notifyAdminNewOrder, type OrderInfo } from "@/lib/notifications";
+import { markSold, isPaymentProcessed } from "@/lib/catalog";
 
 interface WebhookBody {
   type?: string;
@@ -75,12 +77,33 @@ export async function POST(request: NextRequest) {
         break;
       }
 
-      let order: OrderInfo;
+      let order: OrderInfo & { variantIds?: string[] };
       try {
-        order = JSON.parse(rawOrderData) as OrderInfo;
+        order = JSON.parse(rawOrderData) as OrderInfo & { variantIds?: string[] };
       } catch (err) {
         console.error(`[webhook] metadata.order_data del pago ${paymentId} no es JSON válido:`, err);
         break;
+      }
+
+      // Prendas únicas: marcarlas vendidas en la base. La referencia del pago evita procesarlo dos veces.
+      const paymentRef = `mp:${paymentId}`;
+      const variantIds = Array.isArray(order.variantIds) ? order.variantIds : [];
+      if (variantIds.length > 0) {
+        try {
+          if (await isPaymentProcessed(paymentRef)) {
+            console.log(`[webhook] Pago ${paymentId} ya procesado en la base — se ignora el reintento.`);
+            break;
+          }
+          const marked = await markSold(variantIds, paymentRef);
+          if (marked < variantIds.length) {
+            console.warn(`[webhook] Pago ${paymentId}: ${variantIds.length - marked} prenda(s) ya figuraban vendidas — revisar posible doble venta.`);
+          }
+          revalidatePath("/", "layout"); // el catálogo muestra "Agotado" al instante
+        } catch (err) {
+          console.error(`[webhook] No se pudo marcar vendido el pago ${paymentId}:`, err);
+          // 5xx: Mercado Pago reintenta y volvemos a intentar marcarlo
+          return NextResponse.json({ error: "No se pudo actualizar el stock." }, { status: 502 });
+        }
       }
 
       notifiedPaymentIds.add(String(paymentId));

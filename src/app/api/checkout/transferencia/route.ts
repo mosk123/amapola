@@ -1,5 +1,7 @@
+import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
-import { getProductById, validateCartLine, priceOf } from "@/lib/data";
+import { validateCartLine, priceOf } from "@/lib/data";
+import { getFreshCatalog, variantKey, markSold, releaseSold } from "@/lib/catalog";
 import { calculateShipping } from "@/lib/shipping";
 import { sendBuyerOrderEmail, notifyAdminNewOrder, type OrderInfo } from "@/lib/notifications";
 import { TRANSFER_DISCOUNT_RATE } from "@/lib/store-config";
@@ -56,13 +58,24 @@ export async function POST(request: NextRequest) {
   if (seen.size !== items.length) {
     return NextResponse.json({ error: "Hay prendas repetidas en el carrito." }, { status: 400 });
   }
+  // Stock real, leído de la base en este momento (no de caché): una prenda única ya vendida no se puede volver a comprar
+  let catalog;
+  try {
+    catalog = await getFreshCatalog();
+  } catch (err) {
+    console.error("[checkout] No se pudo leer el catálogo:", err);
+    return NextResponse.json({ error: "No pudimos verificar el stock. Probá de nuevo en un momento." }, { status: 503 });
+  }
+  const variantIds: string[] = [];
   for (const item of items) {
     // Producto visible, color no agotado, talle con stock y 1 unidad (prendas únicas)
-    const check = validateCartLine(item);
+    const check = validateCartLine(item, catalog);
     if ("error" in check) {
       return NextResponse.json({ error: check.error }, { status: 400 });
     }
     const { product } = check;
+    const variantId = product.variantIds?.[variantKey(item.color, item.size)];
+    if (variantId) variantIds.push(variantId);
     const qty = 1;
     lines.push({
       title: product.name,
@@ -91,6 +104,20 @@ export async function POST(request: NextRequest) {
     shipping,
     total,
   };
+
+  // Prenda única: queda reservada (vendida) apenas se hace el pedido, para que nadie más la compre
+  // mientras llega la transferencia. Si no se paga, se vuelve a "disponible" desde Supabase.
+  try {
+    const marked = await markSold(variantIds, `transferencia:${orderId}`);
+    if (marked < variantIds.length) {
+      await releaseSold(`transferencia:${orderId}`);
+      return NextResponse.json({ error: "Alguna prenda se acaba de vender. Revisá tu carrito." }, { status: 409 });
+    }
+    if (marked > 0) revalidatePath("/", "layout"); // se ven "Agotado" al instante
+  } catch (err) {
+    console.error("[transferencia] No se pudo reservar el stock:", err);
+    return NextResponse.json({ error: "No pudimos reservar las prendas. Probá de nuevo en un momento." }, { status: 503 });
+  }
 
   await Promise.all([sendBuyerOrderEmail(order), notifyAdminNewOrder(order)]);
 

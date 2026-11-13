@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { COLORS, availableSizes, getCover, getImages, getRelatedProducts, fmt, toneFor, priceLabel } from "@/lib/data";
 import { useCart } from "@/context/CartContext";
+import { useCatalog } from "@/context/CatalogContext";
 import type { Product, ColorKey } from "@/types";
 import Photo from "@/components/Photo";
 import Btn from "@/components/Btn";
@@ -50,7 +51,8 @@ export default function ProductClient({ product: p, initialColor }: Props) {
     <button onClick={() => setGuideOpen(true)} style={GUIDE_LINK}>Ver guía de talles</button>
   ) : null;
 
-  const related = getRelatedProducts(p);
+  const catalog = useCatalog();
+  const related = getRelatedProducts(p, 3, catalog);
   const images = color ? getImages(p, color) : getCover(p);
   const mainImage = images[photo] ?? images[0];
   const step = (d: number) => setPhoto((i) => (i + d + images.length) % images.length);

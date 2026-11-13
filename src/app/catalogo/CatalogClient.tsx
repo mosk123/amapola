@@ -2,7 +2,8 @@
 
 import { useState, useMemo, useEffect, useRef } from "react";
 import Image from "next/image";
-import { CATEGORIES, CATALOG_PRODUCTS, minPrice } from "@/lib/data";
+import { CATEGORIES, minPrice } from "@/lib/data";
+import { useCatalog } from "@/context/CatalogContext";
 import type { ColorKey, Product } from "@/types";
 import Eyebrow from "@/components/Eyebrow";
 import ProductCard from "@/components/ProductCard";
@@ -41,6 +42,7 @@ interface CatalogClientProps {
 }
 
 export default function CatalogClient({ initialCat }: CatalogClientProps) {
+  const catalog = useCatalog();
   // Categorías elegidas en "Filtrar" (vacío = todas)
   const [cats, setCats] = useState<string[]>(
     initialCat && CATEGORIES.some((c) => c.id === initialCat) ? [initialCat] : [],
@@ -71,7 +73,7 @@ export default function CatalogClient({ initialCat }: CatalogClientProps) {
   const background = SHOW_AUDIENCE_FILTERS ? aud : DEFAULT_BACKGROUND;
 
   const filtered = useMemo(() => {
-    let list = cats.length === 0 ? CATALOG_PRODUCTS : CATALOG_PRODUCTS.filter((p) => cats.includes(p.cat));
+    let list = cats.length === 0 ? catalog : catalog.filter((p) => cats.includes(p.cat));
     // "Colores" = prendas que se pueden elegir en más de un color; el resto filtra por audience
     if (aud === "Colores") list = list.filter((p) => p.colors.length > 1);
     else if (aud !== "Todos") list = list.filter((p) => p.audience === aud);
@@ -79,7 +81,7 @@ export default function CatalogClient({ initialCat }: CatalogClientProps) {
     if (sort === "price-desc") list = [...list].sort((a, b) => minPrice(b) - minPrice(a));
     if (sort === "featured") list = [...list].sort((a, b) => (b.badge ? 1 : 0) - (a.badge ? 1 : 0));
     return list;
-  }, [cats, aud, sort]);
+  }, [catalog, cats, aud, sort]);
 
   // Una card por color en las categorías de SPLIT_BY_COLOR_CATS (siempre, también en "Todo"), o en "Colores"
   const cards = useMemo(

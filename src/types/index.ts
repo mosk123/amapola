@@ -78,6 +78,8 @@ export type Product = {
   composition?: string;
   /** Guía de talles (una tabla por pieza; los conjuntos tienen remera y short). */
   measures?: MeasureTable[];
+  /** Base de datos: id de cada prenda disponible, por "color|talle" (para marcarla vendida al pagarse). */
+  variantIds?: Record<string, string>;
   /** Producto fuera de venta por ahora (rebrand a solo niños) — se mantiene en los datos pero no aparece en catálogo/inicio. */
   hidden?: boolean;
 };

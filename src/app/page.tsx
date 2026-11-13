@@ -1,7 +1,9 @@
 import Image from "next/image";
+import { cld } from "@/lib/cloudinary";
 import Link from "next/link";
 // CATALOG_PRODUCTS: volver a importarlo si se reactivan los STATS
-import { CATEGORIES, getProductById } from "@/lib/data";
+import { CATEGORIES } from "@/lib/data";
+import { getCatalog } from "@/lib/catalog";
 import type { ColorKey, Product } from "@/types";
 import Eyebrow from "@/components/Eyebrow";
 import Photo from "@/components/Photo";
@@ -19,31 +21,32 @@ import Icon from "@/components/Icon";
 
 const CAT_TONES = ["caramel", "sage", "rosa", "blush"] as const;
 
-// Fotos de prueba locales (public/images/products-web) — reemplazar por las definitivas en Cloudinary.
-const HERO_IMAGE = "/images/products-web/prueba-portada/portada2.jpg";
+// Fotos en Cloudinary (amapola/productos/<carpeta>/).
+const HERO_IMAGE = cld("portada/portada2.jpg");
 
 // Una foto por categoría (las que no tienen muestran el placeholder)
 const CAT_IMAGES: Record<string, string> = {
-  sweaters:   "/images/products-web/prueba-sweater/rosa-1.jpg",
-  remeras:    "/images/products-web/prueba-remera/remeraVioleta-1.jpg",
-  pantalones: "/images/products-web/prueba-pantalon/pantalon.jpg",
-  vestidos:   "/images/products-web/prueba-vestido/vestido-1.jpg",
-  conjuntos:  "/images/products-web/prueba-conjunto/conjunto-diseño-marino-1.jpg",
-  enteritos:  "/images/products-web/prueba-body/azul-1.jpg",
-  cubrepanal: "/images/products-web/prueba-cubrepañal/cubrepañal.jpg",
-  bodys:      "/images/products-web/prueba-body/body-1.jpg",
+  sweaters:   cld("sweater/rosa-1.jpg"),
+  remeras:    cld("remera/remeraVioleta-1.jpg"),
+  pantalones: cld("pantalon/pantalon.jpg"),
+  vestidos:   cld("vestido/vestido-1.jpg"),
+  conjuntos:  cld("conjunto/conjunto-diseno-marino-1.jpg"),
+  enteritos:  cld("body/azul-1.jpg"),
+  cubrepanal: cld("cubrepanal/cubrepanal.jpg"),
+  bodys:      cld("body/body-1.jpg"),
 };
 
 // "Prendas destacadas" del inicio: producto + color (variant) que se muestra en la card
 const FEATURED: { id: string; variant?: ColorKey }[] = [
-  { id: "prueba-conjunto-diseno", variant: "rojo" },
-  { id: "prueba-remera-violeta" },
-  { id: "prueba-enterito", variant: "crudo" },
+  { id: "conjunto-diseno", variant: "rojo" },
+  { id: "remera-violeta" },
+  { id: "enterito-hojitas", variant: "crudo" },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const catalog = await getCatalog();
   const featured = FEATURED.flatMap(({ id, variant }) => {
-    const product = getProductById(id);
+    const product = catalog.find((p) => p.id === id);
     return product && !product.hidden ? [{ product, variant }] : [];
   }) satisfies { product: Product; variant?: ColorKey }[];
 

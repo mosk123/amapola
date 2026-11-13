@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { MercadoPagoConfig, Preference } from "mercadopago";
-import { getProductById, validateCartLine, priceOf } from "@/lib/data";
+import { validateCartLine, priceOf } from "@/lib/data";
+import { getFreshCatalog, variantKey } from "@/lib/catalog";
 import { calculateShipping } from "@/lib/shipping";
 import type { ColorKey } from "@/types";
 
@@ -70,13 +71,24 @@ export async function POST(request: NextRequest) {
   if (seen.size !== items.length) {
     return NextResponse.json({ error: "Hay prendas repetidas en el carrito." }, { status: 400 });
   }
+  // Stock real, leído de la base en este momento (no de caché): una prenda única ya vendida no se puede volver a comprar
+  let catalog;
+  try {
+    catalog = await getFreshCatalog();
+  } catch (err) {
+    console.error("[checkout] No se pudo leer el catálogo:", err);
+    return NextResponse.json({ error: "No pudimos verificar el stock. Probá de nuevo en un momento." }, { status: 503 });
+  }
+  const variantIds: string[] = [];
   for (const item of items) {
     // Producto visible, color no agotado, talle con stock y 1 unidad (prendas únicas)
-    const check = validateCartLine(item);
+    const check = validateCartLine(item, catalog);
     if ("error" in check) {
       return NextResponse.json({ error: check.error }, { status: 400 });
     }
     const { product } = check;
+    const variantId = product.variantIds?.[variantKey(item.color, item.size)];
+    if (variantId) variantIds.push(variantId);
     const qty = 1;
     lines.push({
       id: product.id,
@@ -129,6 +141,8 @@ export async function POST(request: NextRequest) {
     discount: 0,
     shipping,
     total: subtotal + shipping.cost,
+    // Prendas a marcar vendidas cuando el webhook confirme el pago
+    variantIds,
   };
 
   const accessToken = process.env.MP_ACCESS_TOKEN;

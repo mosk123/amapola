@@ -3,7 +3,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { CATALOG_PRODUCTS, CATEGORIES, COLORS, fmt, getCover, getImages, toneFor, priceLabel } from "@/lib/data";
+import { CATEGORIES, COLORS, getCover, getImages, toneFor, priceLabel } from "@/lib/data";
+import { useCatalog } from "@/context/CatalogContext";
+import type { Product } from "@/types";
 import Photo from "./Photo";
 import Icon from "./Icon";
 
@@ -11,7 +13,7 @@ import Icon from "./Icon";
 const norm = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
 // Texto en el que se busca cada producto: nombre, categoría, colores y descripción corta
-const INDEX = CATALOG_PRODUCTS.map((p) => ({
+const buildIndex = (catalog: Product[]) => catalog.map((p) => ({
   product: p,
   text: norm([
     p.name,
@@ -26,6 +28,8 @@ export default function SearchPanel({ onClose }: { onClose: () => void }) {
   const [q, setQ] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const catalog = useCatalog();
+  const index = useMemo(() => buildIndex(catalog), [catalog]);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -38,8 +42,8 @@ export default function SearchPanel({ onClose }: { onClose: () => void }) {
   const results = useMemo(() => {
     const words = norm(q).split(/\s+/).filter(Boolean);
     if (words.length === 0) return [];
-    return INDEX.filter(({ text }) => words.every((w) => text.includes(w))).map(({ product }) => product);
-  }, [q]);
+    return index.filter(({ text }) => words.every((w) => text.includes(w))).map(({ product }) => product);
+  }, [q, index]);
 
   const go = (href: string) => {
     onClose();

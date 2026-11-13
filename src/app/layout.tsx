@@ -3,6 +3,8 @@ import { Nunito_Sans, IBM_Plex_Mono, Caveat } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
+import { CatalogProvider } from "@/context/CatalogContext";
+import { getCatalog } from "@/lib/catalog";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
@@ -42,10 +44,13 @@ export const metadata: Metadata = {
   description: "Sweaters, remeras, conjuntos y bodys tejidos a mano con lanas y algodones naturales. Para niños y el hogar.",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // Catálogo (Supabase) disponible para los componentes del cliente: buscador, catálogo, carrito
+  const catalog = (await getCatalog()).filter((p) => !p.hidden);
   return (
     <html lang="es" className={`${nunito.variable} ${ibmMono.variable} ${caveat.variable} ${dreamingOutloud.variable}`}>
       <body>
+        <CatalogProvider products={catalog}>
         <CartProvider>
           <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
             <Nav />
@@ -54,6 +59,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <CartDrawer />
           </div>
         </CartProvider>
+        </CatalogProvider>
       </body>
     </html>
   );

@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
+import { useCatalog } from "@/context/CatalogContext";
 import { COLORS, fmt, getCrossSellProducts, getImages, toneFor, priceLabel } from "@/lib/data";
 import Photo from "./Photo";
 import Btn from "./Btn";
@@ -16,7 +17,8 @@ export default function CartDrawer() {
   const goToCheckout = () => { closeCart(); router.push("/checkout"); };
   const goToProduct = (id: string) => { closeCart(); router.push(`/producto/${id}`); };
 
-  const crossSell = getCrossSellProducts(items, 3);
+  const catalog = useCatalog();
+  const crossSell = getCrossSellProducts(items, 3, catalog);
 
   return (
     <>
