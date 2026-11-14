@@ -29,8 +29,6 @@ const DESCRIPCION_POR_CATEGORIA: Record<string, string> = {
   cubrepanal: "Tejida a máquina y terminada cuidadosamente a mano, con el detalle artesanal del tejido a crochet.",
 };
 const descripcionDe = (cat: string) => DESCRIPCION_POR_CATEGORIA[cat] ?? DESCRIPCION_FIJA;
-const listoParaEnviar = (cat: string) =>
-  cat in DESCRIPCION_POR_CATEGORIA ? "Prenda lista para enviar" : "Tejido a mano · Listo para enviar";
 
 export default function ProductClient({ product: p, initialColor }: Props) {
   // Con portada (cover) arranca sin color elegido mostrando la portada; al elegir color se pasa a sus fotos
@@ -313,7 +311,7 @@ export default function ProductClient({ product: p, initialColor }: Props) {
             }}>
               {[
                 ["leaf", `Fibra: ${p.fiber}`],
-                ["hand", listoParaEnviar(p.cat)],
+                ["hand", "Prenda lista para enviar"],
                 ["truck", "Envíos a todo el país"],
               ].map(([icon, text]) => (
                 <div key={text} style={{ display: "flex", gap: 10, alignItems: "center" }}>
