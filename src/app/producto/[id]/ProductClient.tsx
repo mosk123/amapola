@@ -22,6 +22,15 @@ interface Props {
 // Va en todos los productos; debajo se agrega la composición de cada uno
 const DESCRIPCION_FIJA = "Prenda realizada a mano con agujas circulares.";
 
+/** Pantalones, bodys y cubrepañales se tejen a máquina y se terminan a mano. */
+const DESCRIPCION_POR_CATEGORIA: Record<string, string> = {
+  pantalones: "Tejida a máquina y terminada cuidadosamente a mano, con el detalle artesanal de las agujas circulares.",
+  bodys: "Tejida a máquina y terminada cuidadosamente a mano, con el detalle artesanal de las agujas circulares.",
+  cubrepanal: "Tejida a máquina y terminada cuidadosamente a mano, con el detalle artesanal del tejido a crochet.",
+};
+const descripcionDe = (cat: string) => DESCRIPCION_POR_CATEGORIA[cat] ?? DESCRIPCION_FIJA;
+const tejidoA = (cat: string) => (cat in DESCRIPCION_POR_CATEGORIA ? "Terminado a mano" : "Tejido a mano");
+
 export default function ProductClient({ product: p, initialColor }: Props) {
   // Con portada (cover) arranca sin color elegido mostrando la portada; al elegir color se pasa a sus fotos
   const [color, setColor] = useState<ColorKey | null>(initialColor ?? (p.cover ? null : p.colors[0]));
@@ -166,7 +175,7 @@ export default function ProductClient({ product: p, initialColor }: Props) {
 
             {/* Descripción: texto fijo + composición (grosor del hilo) */}
             <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-              <p style={{ margin: 0, font: "400 15px/1.6 var(--ui-font)", color: "var(--ink-soft)" }}>{DESCRIPCION_FIJA}</p>
+              <p style={{ margin: 0, font: "400 15px/1.6 var(--ui-font)", color: "var(--ink-soft)" }}>{descripcionDe(p.cat)}</p>
               {p.composition && (
                 <p style={{ margin: 0, font: "400 15px/1.6 var(--ui-font)", color: "var(--ink-soft)" }}>
                   <strong style={{ fontWeight: 600, color: "var(--ink)" }}>Composición:</strong> {p.composition}
@@ -303,7 +312,7 @@ export default function ProductClient({ product: p, initialColor }: Props) {
             }}>
               {[
                 ["leaf", `Fibra: ${p.fiber}`],
-                ["hand", "Tejido a mano · Listo para enviar"],
+                ["hand", `${tejidoA(p.cat)} · Listo para enviar`],
                 ["truck", "Envíos a todo el país"],
               ].map(([icon, text]) => (
                 <div key={text} style={{ display: "flex", gap: 10, alignItems: "center" }}>
