@@ -1,7 +1,7 @@
 /** Datos del negocio que no son secretos pero tampoco están en el código de UI. */
 
 // TODO: alias real cuando lo tengamos — por ahora inventado a pedido, para poder probar el flujo.
-export const TRANSFER_ALIAS = "amapola.tejidos.mp";
+export const TRANSFER_ALIAS = "amapola.knit";
 
 // WhatsApp de Amapola tal como se muestra en el mail de transferencia (mismo que WHATSAPP_NUMBER).
 export const ADMIN_WHATSAPP_DISPLAY = "2324-314833";
