@@ -35,7 +35,7 @@ const PAYMENT_METHODS: { id: PaymentMethod; icon: Parameters<typeof Icon>[0]["na
 ];
 
 export default function CheckoutClient() {
-  const { items, subtotal, clearCart } = useCart();
+  const { items, ready, subtotal, clearCart } = useCart();
   const router = useRouter();
 
   const [step, setStep] = useState<Step>("checkout");
@@ -116,6 +116,11 @@ export default function CheckoutClient() {
       setStep("confirmar-transferencia");
     }
   };
+
+  // Mientras se lee el carrito guardado, no mostrar "vacío"
+  if (!ready) {
+    return <div style={{ minHeight: "60vh" }} aria-busy="true" />;
+  }
 
   if (items.length === 0) {
     return (
