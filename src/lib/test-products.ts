@@ -153,7 +153,7 @@ export const TEST_PRODUCTS: Product[] = [
   {
     // Body Frambuesa (musculosa): cereza liso y rayado cereza y blanco
     id: "body-frambuesa", name: "Body Frambuesa", cat: "bodys", audience: "Clásico",
-    price: 30000, colors: ["1color", "2colores"], sizes: TALLES_BODY,
+    price: 51429, colors: ["1color", "2colores"], sizes: TALLES_BODY,
     stock: { "1color": ["3-6 m"], "2colores": ["3-6 m"] },
     measures: [M_BODY],
     composition: "Hilo de algodón 8/3",
@@ -168,7 +168,7 @@ export const TEST_PRODUCTS: Product[] = [
   },
   {
     id: "enterito-hojitas", name: "Enterito Hojitas", cat: "enteritos", audience: "Clásico",
-    price: 45000, colors: ["azulmarino", "crudo"], sizes: ["RN-3 m"],
+    price: 51429, colors: ["azulmarino", "crudo"], sizes: ["RN-3 m"],
     stock: { azulmarino: ["RN-3 m"], crudo: ["RN-3 m"] },
     measures: [M_ENTERITO],
     composition: "Hilo de algodón 8/6",
