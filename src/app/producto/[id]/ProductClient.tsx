@@ -210,7 +210,7 @@ export default function ProductClient({ product: p, initialColor }: Props) {
             {pieces ? (
               <div>
                 <div style={LABEL_ROW}>
-                  <p style={{ margin: 0, font: "600 13px/1 var(--ui-font)", color: "var(--ink)" }}>Talles del conjunto</p>
+                  <p style={{ margin: 0, font: "600 13px/1 var(--ui-font)", color: "var(--ink)" }}>Talles del conjunto*</p>
                   {guideLink}
                 </div>
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -229,7 +229,7 @@ export default function ProductClient({ product: p, initialColor }: Props) {
               <div>
                 <div style={LABEL_ROW}>
                   <p style={{ margin: 0, font: "600 13px/1 var(--ui-font)", color: "var(--ink)" }}>
-                    Talle{soldOut && !isSoldOut && <span style={{ color: "var(--muted)", fontWeight: 400 }}> · sin stock en este color</span>}
+                    Talle*{soldOut && !isSoldOut && <span style={{ color: "var(--muted)", fontWeight: 400 }}> · sin stock en este color</span>}
                   </p>
                   {guideLink}
                 </div>
@@ -261,6 +261,13 @@ export default function ProductClient({ product: p, initialColor }: Props) {
                 </div>
               </div>
             )}
+
+            {/* Nota sobre las medidas (el * de "Talle") */}
+            <p style={{ margin: "-8px 0 0", font: "400 12px/1.5 var(--ui-font)", color: "var(--ink-soft)" }}>
+              * <strong style={{ fontWeight: 700 }}>Importante:</strong> Las medidas son aproximadas y pueden presentar pequeñas variaciones,
+              ya que cada prenda está tejida artesanalmente. Si tenés alguna duda o necesitás asesoramiento con el talle,
+              ¡no dudes en consultarme!
+            </p>
 
             {/* Cantidad + Agregar */}
             <div className="buy-bar" style={{ display: "flex", gap: 12, alignItems: "center" }}>
